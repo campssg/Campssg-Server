@@ -1,6 +1,6 @@
-package com.campssg.demo.dto;
+package com.campssg.dto;
 
-import com.campssg.demo.DB.entity.User;
+import com.campssg.DB.entity.User;
 import lombok.*;
 
 import java.time.OffsetDateTime;
