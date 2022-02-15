@@ -1,7 +1,7 @@
-package com.campssg.demo.service;
+package com.campssg.service;
 
-import com.campssg.demo.DB.entity.User;
-import com.campssg.demo.DB.repository.UserRepository;
+import com.campssg.DB.entity.User;
+import com.campssg.DB.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
