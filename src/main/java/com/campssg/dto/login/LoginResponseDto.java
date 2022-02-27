@@ -1,17 +1,20 @@
 package com.campssg.dto.login;
 
 import com.campssg.DB.entity.User;
-import java.time.OffsetDateTime;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
+@Setter
 public class LoginResponseDto {
-    private Long userId;
-    private String userEmail;
-    private String userName;
-    private String phoneNumber;
-    private String jwt;
-    private OffsetDateTime createdAt;
+    private final Long userId;
+    private final String userEmail;
+    private final String userName;
+    private final String phoneNumber;
+    private final String jwt;
+    private final LocalDateTime createdAt;
 
     public LoginResponseDto(User entity, String jwt) {
         this.userId = entity.getUserId();

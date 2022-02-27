@@ -1,63 +1,68 @@
 package com.campssg.config;
 
-
-import com.campssg.DB.repository.UserRepository;
-import com.campssg.config.auth.PrincipalDetailsService;
-import com.campssg.config.jwt.JwtAuthenticationFilter;
-import com.campssg.config.jwt.JwtTokenProviderFilter;
-import java.security.Principal;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.campssg.config.jwt.JwtAccessDeniedHandler;
+import com.campssg.config.jwt.JwtAuthenticationEntryPoint;
+import com.campssg.config.jwt.JwtSecurityConfig;
+import com.campssg.config.jwt.TokenProvider;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 
-@Configuration
-@EnableWebSecurity // 시큐리티 활성화 -> 기본 스프링 필터체인에 등록
-@AllArgsConstructor
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	// private final UserRepository userRepository;
-    private final CorsConfig corsConfig;
-    private final PrincipalDetailsService principalDetailsService;
+    private final TokenProvider tokenProvider;
+    private final CorsFilter corsFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    public SecurityConfig(
+            TokenProvider tokenProvider,
+            CorsFilter corsFilter,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+            JwtAccessDeniedHandler jwtAccessDeniedHandler
+    ) {
+        this.tokenProvider = tokenProvider;
+        this.corsFilter = corsFilter;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http
-				.addFilter(corsConfig.corsFilter())
-				.csrf().disable()
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-				.formLogin().disable()
-				.httpBasic().disable()
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
 
-				.addFilter(new JwtAuthenticationFilter(authenticationManager()))
-             //.addFilter(new JwtTokenProviderFilter(authenticationManager(), principalDetailsService))
-				// .addFilter(new JwtTokenProviderFilter(authenticationManager(), userRepository))
-				.authorizeRequests()
-                // TODO: 권한 수
-				.antMatchers("/api/v1/user/**")
-				.access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-				.antMatchers("/api/v1/manager/**")
-					.access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-				.antMatchers("/api/v1/admin/**")
-					.access("hasRole('ROLE_ADMIN')")
-				.anyRequest().permitAll();
-	}
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/v1/hello").permitAll()
+                .antMatchers("/api/v1/login").permitAll()
+                .antMatchers("/api/v1/register").permitAll()
+
+                .anyRequest().authenticated()
+
+                .and()
+                .apply(new JwtSecurityConfig(tokenProvider));
+    }
 }
-
-
-
-
-
-

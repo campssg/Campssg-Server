@@ -1,27 +1,25 @@
-package com.campssg.config.auth;
+package com.campssg.service;
 
 import com.campssg.DB.entity.User;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class PrincipalDetails implements UserDetails {
+import java.util.ArrayList;
+import java.util.Collection;
 
-    private User user;
+public class CustomUserDetails implements UserDetails {
 
-    public PrincipalDetails(User user) { this.user = user; }
+    private final User user;
+
+    public CustomUserDetails(User user) { this.user = user; }
 
     public User getUser() { return user; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-
-        user.getRoleList().forEach(r -> {
-            authorities.add(()->{ return r;});
-        });
-        return authorities;
+        Collection<GrantedAuthority> collect = new ArrayList<>();
+        collect.add((GrantedAuthority) user::getUserRole);
+        return collect;
     }
 
     @Override
