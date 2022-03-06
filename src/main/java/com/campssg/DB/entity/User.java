@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 import lombok.*;
 
+import java.util.Set;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -33,9 +35,9 @@ public class User extends Auditor {
     @Column(name = "phone_number", length = 45, nullable = false, unique = true)
     private String phoneNumber;
 
-    // TODO: 권한 설정 추가
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_role", length = 45, nullable = false)
-    private String userRole;
+    private Role userRole;
 
     @Column(name = "social_platform", length = 45)
     private String socialPlatform;

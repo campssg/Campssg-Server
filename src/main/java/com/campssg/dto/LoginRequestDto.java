@@ -1,4 +1,4 @@
-package com.campssg.dto.login;
+package com.campssg.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;

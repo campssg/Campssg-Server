@@ -34,10 +34,6 @@ public class UserDto {
     @Size(min = 5, max = 50)
     private String phoneNumber;
 
-    @NotNull
-    @Size(min = 2, max = 50)
-    private String userRole;
-
     public static UserDto from(User user) {
         if(user == null) return null;
 
@@ -46,7 +42,6 @@ public class UserDto {
                 .userName(user.getUserName())
                 .userNickname(user.getUserNickname())
                 .phoneNumber(user.getPhoneNumber())
-                .userRole(user.getUserRole())
                 .build();
     }
 }
