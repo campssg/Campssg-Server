@@ -8,6 +8,7 @@ import com.campssg.dto.TokenDto;
 import com.campssg.dto.UserDto;
 import com.campssg.dto.LoginRequestDto;
 import com.campssg.exception.DuplicateMemberException;
+import com.campssg.util.SecurityUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -79,5 +80,10 @@ public class UserService {
         String jwt = tokenProvider.createToken(authentication);
 
         return new TokenDto(jwt);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto getMyInfo() {
+        return UserDto.from(SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null));
     }
 }
