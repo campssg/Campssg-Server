@@ -76,4 +76,11 @@ public class UserController {
     public ResponseEntity<UserDto> updateUserNickname(HttpServletRequest request, @Valid @RequestBody NicknameDto nicknameDto) {
         return ResponseEntity.ok(userService.updateUserNickname(nicknameDto));
     }
+
+    // TODO: 비밀번호 변경 추가
+    @PatchMapping("/user/update/password")
+    @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
+    public ResponseEntity<TokenDto> updateUserPassword(HttpServletRequest request, @Valid @RequestBody PasswordDto passwordDto) {
+        return ResponseEntity.ok(userService.updateUserPassword(passwordDto));
+    }
 }

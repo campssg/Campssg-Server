@@ -4,12 +4,10 @@ import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.config.jwt.TokenProvider;
-import com.campssg.dto.NicknameDto;
-import com.campssg.dto.TokenDto;
-import com.campssg.dto.UserDto;
-import com.campssg.dto.LoginRequestDto;
+import com.campssg.dto.*;
 import com.campssg.exception.DuplicateMemberException;
 import com.campssg.util.SecurityUtil;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -90,5 +88,28 @@ public class UserService {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
         user.setUserNickname(nicknameDto.getUserNickname());
         return UserDto.from(userRepository.save(user));
+    }
+
+    // TODO: 비밀번호 변경 추가
+    @Transactional
+    public TokenDto updateUserPassword(PasswordDto passwordDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
+        user.setUserPassword(passwordDto.getNewPassword());
+
+        User modifyUser = User.builder()
+                .userPassword(passwordEncoder.encode(user.getUserPassword()))
+                .build();
+
+        userRepository.save(modifyUser);
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(modifyUser.getUserEmail(), modifyUser.getUserPassword());
+
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenProvider.createToken(authentication);
+
+        return new TokenDto(jwt);
     }
 }
