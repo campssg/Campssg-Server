@@ -1,10 +1,7 @@
 package com.campssg.controller;
 
 import com.campssg.config.jwt.JwtFilter;
-import com.campssg.dto.ResponseMessage;
-import com.campssg.dto.TokenDto;
-import com.campssg.dto.UserDto;
-import com.campssg.dto.LoginRequestDto;
+import com.campssg.dto.*;
 import com.campssg.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -60,9 +57,23 @@ public class UserController {
                 httpHeaders, HttpStatus.OK);
     }
 
-    @GetMapping("/user")
+    @ApiOperation(value = "사용자 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
+    })
+    @GetMapping("/user/info")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
     public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
         return ResponseEntity.ok(userService.getMyInfo());
+    }
+
+    @ApiOperation(value = "사용자 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
+    })
+    @PatchMapping("/user/update/nickname")
+    @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
+    public ResponseEntity<UserDto> updateUserNickname(HttpServletRequest request, @Valid @RequestBody NicknameDto nicknameDto) {
+        return ResponseEntity.ok(userService.updateUserNickname(nicknameDto));
     }
 }

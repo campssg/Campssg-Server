@@ -4,6 +4,7 @@ import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.config.jwt.TokenProvider;
+import com.campssg.dto.NicknameDto;
 import com.campssg.dto.TokenDto;
 import com.campssg.dto.UserDto;
 import com.campssg.dto.LoginRequestDto;
@@ -82,5 +83,12 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDto getMyInfo() {
         return UserDto.from(SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null));
+    }
+
+    @Transactional
+    public UserDto updateUserNickname(NicknameDto nicknameDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
+        user.setUserNickname(nicknameDto.getUserNickname());
+        return UserDto.from(userRepository.save(user));
     }
 }
