@@ -17,9 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Optional;
-
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -46,7 +43,7 @@ public class UserService {
                 .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
                 .userName(userDto.getUserName())
                 .phoneNumber(userDto.getPhoneNumber())
-                .userRole(Role.ROLE_USER)
+                .userRole(Role.ROLE_GUEST)
                 .build();
 
         return UserDto.from(userRepository.save(user));

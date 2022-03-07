@@ -31,7 +31,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "서비스 이용자 권한 및 정보 등록 완료")
     })
-    @PostMapping("/register/user")
+    @PostMapping("/register/guest")
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.registerUser(userDto));
     }
@@ -61,14 +61,8 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
     public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.getMyInfo());
-    }
-
-    @GetMapping("/manager")
-    @PreAuthorize("hasAnyRole('MANAGER')")
-    public ResponseEntity<UserDto> getMyManagerInfo(HttpServletRequest request) {
         return ResponseEntity.ok(userService.getMyInfo());
     }
 }
