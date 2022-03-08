@@ -83,10 +83,9 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserPassword(passwordDto));
     }
 
-    // TODO: 회원 탈퇴 기능 보완
     @PostMapping("/user/delete")
-    public String deleteUser(PasswordDto passwordDto) {
-        userService.deleteUser(passwordDto);
+    public String deleteUser(@RequestBody String userPassword) {
+        userService.deleteUser(userPassword);
         return "성공";
     }
 }

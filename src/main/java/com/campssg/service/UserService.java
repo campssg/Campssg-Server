@@ -100,7 +100,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(PasswordDto passwordDto) {
+    public void deleteUser(String userPassword) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
         // TODO: 탈퇴 전 비밀번호 확인
         userRepository.delete(user);
