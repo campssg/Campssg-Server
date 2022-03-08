@@ -90,26 +90,19 @@ public class UserService {
         return UserDto.from(userRepository.save(user));
     }
 
-    // TODO: 비밀번호 변경 추가
+    // TODO: 비밀번호 일치 확인 추가
     @Transactional
-    public TokenDto updateUserPassword(PasswordDto passwordDto) {
+    public UserDto updateUserPassword(PasswordDto passwordDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
-        user.setUserPassword(passwordDto.getNewPassword());
+        user.setUserPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
 
-        User modifyUser = User.builder()
-                .userPassword(passwordEncoder.encode(user.getUserPassword()))
-                .build();
+        return UserDto.from(userRepository.save(user));
+    }
 
-        userRepository.save(modifyUser);
-
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(modifyUser.getUserEmail(), modifyUser.getUserPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken(authentication);
-
-        return new TokenDto(jwt);
+    @Transactional
+    public void deleteUser(PasswordDto passwordDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
+        // TODO: 탈퇴 전 비밀번호 확인
+        userRepository.delete(user);
     }
 }

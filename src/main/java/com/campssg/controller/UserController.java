@@ -77,10 +77,16 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserNickname(nicknameDto));
     }
 
-    // TODO: 비밀번호 변경 추가
     @PatchMapping("/user/update/password")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
-    public ResponseEntity<TokenDto> updateUserPassword(HttpServletRequest request, @Valid @RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<UserDto> updateUserPassword(HttpServletRequest request, @Valid @RequestBody PasswordDto passwordDto) {
         return ResponseEntity.ok(userService.updateUserPassword(passwordDto));
+    }
+
+    // TODO: 회원 탈퇴 기능 보완
+    @PostMapping("/user/delete")
+    public String deleteUser(PasswordDto passwordDto) {
+        userService.deleteUser(passwordDto);
+        return "성공";
     }
 }
