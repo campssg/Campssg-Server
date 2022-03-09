@@ -5,12 +5,12 @@ import com.campssg.dto.SmsRequestDto;
 import com.campssg.dto.SmsResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class SmsService {
@@ -37,6 +38,8 @@ public class SmsService {
     private String accessKey;
     @Value("${sms.secretKey}")
     private String secretKey;
+    @Value("${sms.from}")
+    private String from;
 
     public SmsResponseDto sendSms(String phoneNumber) throws JsonProcessingException,
             UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
@@ -47,7 +50,7 @@ public class SmsService {
         List<SmsMessageDto> messages = new ArrayList<>();
         messages.add(new SmsMessageDto(phoneNumber, content));
 
-        SmsRequestDto smsRequestDto = new SmsRequestDto("SMS", "COMM", "82", "발신번호", "campssg", messages);
+        SmsRequestDto smsRequestDto = new SmsRequestDto("SMS", "COMM", "82", this.from, "campssg", messages);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(smsRequestDto);
 
@@ -68,6 +71,8 @@ public class SmsService {
 
         return smsResponseDto;
     }
+
+    // TODO: 생성한 인증번호 저장해뒀다가 확인하기
 
     public String makeSignature(Long time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         String space = " ";
