@@ -1,6 +1,5 @@
 package com.campssg.config.jwt;
 
-import com.campssg.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -39,6 +38,7 @@ public class TokenProvider implements InitializingBean {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
     }
+
     // 빈 생성 후 주입받은 secret 값을 Base64로 Decode 해서 key 변수에 할당
     @Override
     public void afterPropertiesSet() {
@@ -80,6 +80,7 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

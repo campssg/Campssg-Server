@@ -7,7 +7,6 @@ import com.campssg.config.jwt.TokenProvider;
 import com.campssg.dto.*;
 import com.campssg.exception.DuplicateMemberException;
 import com.campssg.util.SecurityUtil;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;

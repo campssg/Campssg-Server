@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor
-@ApiModel(value = "닉네임 수정")
+@ApiModel(value = "닉네임 추가 또는 수정")
 public class NicknameDto {
 
     @NotNull

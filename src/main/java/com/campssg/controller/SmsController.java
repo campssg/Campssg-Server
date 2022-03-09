@@ -6,8 +6,10 @@ import com.campssg.dto.SmsCertificationRequestDto;
 import com.campssg.dto.SmsResponseDto;
 import com.campssg.service.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,10 @@ public class SmsController {
 
     private final SmsService smsService;
 
+    @ApiOperation(value = "인증번호 요청 보내기")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "인증번호 전송 완료")
+    })
     @PostMapping("register/sms/send")
     public ResponseEntity<SmsResponseDto> sendSms(@RequestBody SendSmsRequestDto sendSmsRequestDto) throws NoSuchAlgorithmException, URISyntaxException,
             UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
@@ -33,9 +39,13 @@ public class SmsController {
         return ResponseEntity.ok().body(smsResponseDto);
     }
 
+    @ApiOperation(value = "인증번호 일치 확인")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "인증번호 확인 결과 전송")
+    })
     @PostMapping("register/sms/verify")
     public ResponseEntity<ResponseMessage> veritySms(@RequestBody SmsCertificationRequestDto smsCertificationRequestDto) {
-        // TODO: 인증번호 맞는지 확인
-        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "success"));
+        ResponseMessage responseMessage = smsService.verifySms(smsCertificationRequestDto);
+        return ResponseEntity.ok().body(responseMessage);
     }
 }
