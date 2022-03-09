@@ -7,6 +7,8 @@ import com.campssg.config.jwt.TokenProvider;
 import com.campssg.dto.*;
 import com.campssg.exception.DuplicateMemberException;
 import com.campssg.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
+
+    private final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
@@ -89,19 +94,25 @@ public class UserService {
         return UserDto.from(userRepository.save(user));
     }
 
-    // TODO: 비밀번호 일치 확인 추가
+    // 비밀번호 일치 확인 후 일치하면 비밀번호 변경
     @Transactional
     public UserDto updateUserPassword(PasswordDto passwordDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
-        user.setUserPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
-
+        if (passwordEncoder.matches(passwordDto.getNewPassword(), user.getUserPassword())) {
+            user.setUserPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        } else {
+            logger.info("비밀번호가 일치하지 않습니다");
+        }
         return UserDto.from(userRepository.save(user));
     }
 
     @Transactional
-    public void deleteUser(String userPassword) {
+    public void deleteUser(DeleteRequestDto deleteRequestDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
-        // TODO: 탈퇴 전 비밀번호 확인
-        userRepository.delete(user);
+        if (passwordEncoder.matches(deleteRequestDto.getUserPassword(), user.getUserPassword())) {
+            userRepository.delete(user);
+        } else {
+            logger.info("비밀번호가 일치하지 않습니다");
+        }
     }
 }

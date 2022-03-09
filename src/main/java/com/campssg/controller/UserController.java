@@ -77,15 +77,23 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserNickname(nicknameDto));
     }
 
+    @ApiOperation(value = "비밀번호 변경")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "비밀번호 변경 완료")
+    })
     @PatchMapping("/user/update/password")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
     public ResponseEntity<UserDto> updateUserPassword(HttpServletRequest request, @Valid @RequestBody PasswordDto passwordDto) {
         return ResponseEntity.ok(userService.updateUserPassword(passwordDto));
     }
 
+    @ApiOperation(value = "회원 탈퇴")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "회원 탈퇴 완료")
+    })
     @PostMapping("/user/delete")
-    public String deleteUser(@RequestBody String userPassword) {
-        userService.deleteUser(userPassword);
-        return "성공";
+    public ResponseEntity<ResponseMessage> deleteUser(@RequestBody DeleteRequestDto deleteRequestDto) {
+        userService.deleteUser(deleteRequestDto);
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "탈퇴가 완료되었습니다"));
     }
 }

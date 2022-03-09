@@ -12,7 +12,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @ApiModel(value = "비밀번호 변경")
 public class PasswordDto {
-    // TODO: 비밀번호 확인 추가
+    @NotNull
+    private String recentPassword;
+
     @NotNull
     private String newPassword;
 }
