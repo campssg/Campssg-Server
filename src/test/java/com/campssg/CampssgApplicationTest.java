@@ -21,7 +21,7 @@ public class CampssgApplicationTest {
     @Test
     void sendSms() throws JsonProcessingException, ParseException, UnsupportedEncodingException, URISyntaxException,
             NoSuchAlgorithmException, InvalidKeyException {
-        smsService.sendSms("수신번호", "test");
+        smsService.sendSms("수신번호");
     }
 
     @Test

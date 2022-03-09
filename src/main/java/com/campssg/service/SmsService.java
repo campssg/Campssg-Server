@@ -25,6 +25,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @Transactional
@@ -37,13 +38,16 @@ public class SmsService {
     @Value("${sms.secretKey}")
     private String secretKey;
 
-    public SmsResponseDto sendSms(String phoneNumber, String content) throws JsonProcessingException,
+    public SmsResponseDto sendSms(String phoneNumber) throws JsonProcessingException,
             UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         Long time = System.currentTimeMillis();
+
+        String number = randomNumber();
+        String content = "인증번호는 [" + number + "] 입니다";
         List<SmsMessageDto> messages = new ArrayList<>();
         messages.add(new SmsMessageDto(phoneNumber, content));
 
-        SmsRequestDto smsRequestDto = new SmsRequestDto("SMS", "COMM", "82", "발신번호", "test", messages);
+        SmsRequestDto smsRequestDto = new SmsRequestDto("SMS", "COMM", "82", "발신번호", "campssg", messages);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(smsRequestDto);
 
@@ -92,5 +96,20 @@ public class SmsService {
         String endcodeBase64String = Base64.encodeBase64String(rawHmac);
 
         return endcodeBase64String;
+    }
+
+    public String randomNumber() {
+        Random random = new Random();
+        int number = 0; // 1자리 난수
+        String stringNumber = ""; //1자리 난수를 String 으로 형변환
+        String resultNumber = ""; // 최종적으로 만들 6자리 난수 string
+
+        for (int i = 0; i < 6; i++) {
+            number = random.nextInt(9);
+            stringNumber = Integer.toString(number);
+            resultNumber += stringNumber;
+        }
+
+        return  resultNumber;
     }
 }
