@@ -1,5 +1,6 @@
 package com.campssg.DB.entity;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 @NoArgsConstructor
 @Getter
@@ -43,14 +45,16 @@ public class Mart {
     @Column(name = "request_yn")
     private Long requestYn;
 
+    @CreatedDate
     @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
     @Builder
-    public Mart(Long martId, User user, String martName, String martAddress, Long requestYn, String openTime, String closeTime) {
+    public Mart(Long martId, User user, String martName, String martAddress, Long requestYn, String openTime,
+        String closeTime) {
         this.martId = martId;
         this.user = user;
         this.martName = martName;
@@ -58,5 +62,10 @@ public class Mart {
         this.requestYn = requestYn;
         this.openTime = openTime;
         this.closeTime = closeTime;
+    }
+
+    @Builder(builderClassName = "ByMartIdBuilder", builderMethodName = "ByMartIdBuilder")
+    public Mart(Long martId) {
+        this.martId = martId;
     }
 }
