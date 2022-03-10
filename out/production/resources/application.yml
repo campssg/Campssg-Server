@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/shopdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
+    url: jdbc:mysql://campssg-database.cxglejcx1yfl.ap-northeast-2.rds.amazonaws.com:3306/campssg
+    username: admin
+    password: campssg123!!
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -11,4 +11,7 @@ spring:
     show-sql: true
     hibernate:
       format_sql: true
-      ddl-auto: update
+      ddl-auto: none
+
+openApi:
+  serviceKey: qejEraY6psCsk4kkFz8j5VV1JEg0Nr/3cRsXKQQDpqABEToniFE6SDSjhcs4jZAX1C/dwowyy1e52ljKometPQ==
