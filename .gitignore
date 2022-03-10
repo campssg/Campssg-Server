@@ -2,14 +2,12 @@
 .gradle
 /.idea
 /.out
-/out
 
 # Compiled class file
 *.class
 
 # Log file
 *.log
-.gitignore
 
 # BlueJ files
 *.ctxt

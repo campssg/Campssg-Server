@@ -3,15 +3,13 @@ package com.campssg.dto.mart;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@Builder
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "마트 등록 요청")
 public class MartCertificationRequestDto {
     @NotNull(message = "사업자 등록 번호는 필수입니다.")
