@@ -1,43 +1,118 @@
 package com.campssg.service;
 
+import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.UserRepository;
-import com.campssg.config.jwt.JwtTokenProviderFilter;
-import com.campssg.dto.UserDto;
-import com.campssg.dto.login.LoginRequestDto;
-import com.campssg.dto.login.LoginResponseDto;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.campssg.config.jwt.TokenProvider;
+import com.campssg.dto.*;
+import com.campssg.exception.DuplicateMemberException;
+import com.campssg.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
 public class UserService {
-    private UserRepository userRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Transactional
-    public Long joinUser(UserDto userDto) {
-        userDto.setUser_password(passwordEncoder.encode(userDto.getUser_password()));
-        return userRepository.save(userDto.toEntity()).getUserId();
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
     @Transactional
-    public LoginResponseDto defaultLogin(LoginRequestDto requestDto) {
-        User user = userRepository.findByUserEmail(requestDto.getUserEmail());
-
-        if (passwordEncoder.matches(user.getUserPassword(), requestDto.getPassword())) {
-            // JWT token 생성
-            return new LoginResponseDto(user, null);
+    public UserDto registerUser(UserDto userDto) {
+        if (userRepository.findByUserEmail(userDto.getUserEmail()).orElse(null) != null) {
+            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다");
         }
-        return null;
+
+        User user = User.builder()
+                .userEmail(userDto.getUserEmail())
+                .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
+                .userName(userDto.getUserName())
+                .phoneNumber(userDto.getPhoneNumber())
+                .userRole(Role.ROLE_GUEST)
+                .build();
+
+        return UserDto.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserDto registerManager(UserDto userDto) {
+        if (userRepository.findByUserEmail(userDto.getUserEmail()).orElse(null) != null) {
+            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다");
+        }
+
+        User user = User.builder()
+                .userEmail(userDto.getUserEmail())
+                .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
+                .userName(userDto.getUserName())
+                .phoneNumber(userDto.getPhoneNumber())
+                .userRole(Role.ROLE_MANAGER)
+                .build();
+
+        return UserDto.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public TokenDto login(LoginRequestDto loginRequestDto) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequestDto.getUserEmail(), loginRequestDto.getUserPassword());
+
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = tokenProvider.createToken(authentication);
+
+        return new TokenDto(jwt);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto getMyInfo() {
+        return UserDto.from(SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null));
+    }
+
+    @Transactional
+    public UserDto updateUserNickname(NicknameDto nicknameDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
+        user.setUserNickname(nicknameDto.getUserNickname());
+        return UserDto.from(userRepository.save(user));
+    }
+
+    // 비밀번호 일치 확인 후 일치하면 비밀번호 변경
+    @Transactional
+    public UserDto updateUserPassword(PasswordDto passwordDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
+        if (passwordEncoder.matches(passwordDto.getNewPassword(), user.getUserPassword())) {
+            user.setUserPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        } else {
+            logger.info("비밀번호가 일치하지 않습니다");
+        }
+        return UserDto.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public void deleteUser(DeleteRequestDto deleteRequestDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
+        if (passwordEncoder.matches(deleteRequestDto.getUserPassword(), user.getUserPassword())) {
+            userRepository.delete(user);
+        } else {
+            logger.info("비밀번호가 일치하지 않습니다");
+        }
     }
 }

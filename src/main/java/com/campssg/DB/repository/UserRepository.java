@@ -3,7 +3,8 @@ package com.campssg.DB.repository;
 import com.campssg.DB.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
 
-    User findByUserEmail(String userEmail);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUserEmail(String userEmail);
 }

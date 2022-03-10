@@ -1,2 +1,2 @@
-com/campssg/demo/DemoApplicationTests.java
- com.campssg.demo.DemoApplicationTests
+com/campssg/CampssgApplicationTest.java
+ com.campssg.CampssgApplicationTest
