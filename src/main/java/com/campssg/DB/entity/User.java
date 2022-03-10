@@ -42,4 +42,8 @@ public class User extends Auditor {
 
     @Column(name = "access_token")
     private String accessToken;
+
+    public User(Long userId) {
+        this.userId = userId;
+    }
 }

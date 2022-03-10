@@ -19,7 +19,7 @@ import org.springframework.data.annotation.CreatedDate;
 @Getter
 @Entity
 @Table(name = "mart")
-public class Mart {
+public class Mart extends Auditor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,13 +44,6 @@ public class Mart {
 
     @Column(name = "request_yn")
     private Long requestYn;
-
-    @CreatedDate
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
 
     @Builder
     public Mart(Long martId, User user, String martName, String martAddress, Long requestYn, String openTime,

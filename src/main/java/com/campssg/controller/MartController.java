@@ -1,7 +1,6 @@
 package com.campssg.controller;
 
 import com.campssg.dto.ResponseMessage;
-import com.campssg.dto.login.LoginResponseDto;
 import com.campssg.dto.mart.MartListResponseDto;
 import com.campssg.dto.mart.MartSaveRequestDto;
 import com.campssg.dto.mart.ProductListResponse;
@@ -57,7 +56,7 @@ public class MartController {
         @ApiResponse(code = 201, message = "해당 마트에 상품 등록")
     })
     @PostMapping("/{martId}")
-    public ResponseEntity<ResponseMessage<LoginResponseDto>> saveProductToMart(
+    public ResponseEntity<ResponseMessage> saveProductToMart(
         @PathVariable Long martId,
         @RequestBody @Validated ProductSaveRequest requestDto) {
         requestDto.setMartId(martId);
