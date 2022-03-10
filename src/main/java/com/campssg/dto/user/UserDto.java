@@ -1,4 +1,4 @@
-package com.campssg.dto;
+package com.campssg.dto.user;
 
 import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;

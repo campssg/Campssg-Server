@@ -4,7 +4,7 @@ import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.config.jwt.TokenProvider;
-import com.campssg.dto.*;
+import com.campssg.dto.user.*;
 import com.campssg.exception.DuplicateMemberException;
 import com.campssg.util.SecurityUtil;
 import org.slf4j.Logger;

@@ -2,6 +2,7 @@ package com.campssg.controller;
 
 import com.campssg.config.jwt.JwtFilter;
 import com.campssg.dto.*;
+import com.campssg.dto.user.*;
 import com.campssg.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

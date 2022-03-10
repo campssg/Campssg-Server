@@ -1,4 +1,4 @@
-package com.campssg.dto;
+package com.campssg.dto.sms;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AccessLevel;

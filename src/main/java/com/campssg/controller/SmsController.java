@@ -1,9 +1,9 @@
 package com.campssg.controller;
 
 import com.campssg.dto.ResponseMessage;
-import com.campssg.dto.SendSmsRequestDto;
-import com.campssg.dto.SmsCertificationRequestDto;
-import com.campssg.dto.SmsResponseDto;
+import com.campssg.dto.sms.SendSmsRequestDto;
+import com.campssg.dto.sms.SmsCertificationRequestDto;
+import com.campssg.dto.sms.SmsResponseDto;
 import com.campssg.service.SmsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiOperation;

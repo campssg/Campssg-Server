@@ -1,4 +1,4 @@
-package com.campssg.dto;
+package com.campssg.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
@@ -10,11 +10,9 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor
-@ApiModel(value = "비밀번호 변경")
-public class PasswordDto {
-    @NotNull
-    private String recentPassword;
+@ApiModel(value = "닉네임 추가 또는 수정")
+public class NicknameDto {
 
     @NotNull
-    private String newPassword;
+    private String userNickname;
 }

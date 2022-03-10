@@ -1,5 +1,6 @@
-package com.campssg.dto;
+package com.campssg.dto.sms;
 
+import com.campssg.dto.sms.SmsMessageDto;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
