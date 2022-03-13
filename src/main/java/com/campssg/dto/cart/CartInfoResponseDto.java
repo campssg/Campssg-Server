@@ -6,10 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CartListResponseDto {
+public class CartInfoResponseDto {
     private Long cartId;
+    private int totalCount;
+    private Long totalPrice;
 
-    public CartListResponseDto(Cart cart) {
+    public CartInfoResponseDto(Cart cart) {
         this.cartId = cart.getCartId();
     }
 }

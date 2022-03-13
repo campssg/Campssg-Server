@@ -1,11 +1,10 @@
 package com.campssg.DB.repository;
 
 import com.campssg.DB.entity.Cart;
-import com.campssg.DB.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    List<Cart> findByUser_userId(Long userId);
+    Optional<Cart> findByUser_userId(Long userId);
 }

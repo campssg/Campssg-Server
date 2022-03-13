@@ -1,7 +1,8 @@
 package com.campssg.controller;
 
+import com.campssg.DB.entity.Cart;
 import com.campssg.dto.ResponseMessage;
-import com.campssg.dto.cart.CartListResponseDto;
+import com.campssg.dto.cart.CartInfoResponseDto;
 import com.campssg.service.CartService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -9,12 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,23 +18,18 @@ import java.util.List;
 public class CartController {
     private final CartService cartService;
 
-    @ApiOperation(value = "장바구니 등록")
+    @ApiOperation(value = "장바구니 조회")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "장바구니 등록 성공")
+            @ApiResponse(code = 200, message = "장바구니 조회 성공")
     })
-    @PostMapping("/add")
-    public ResponseEntity<ResponseMessage> addCart() {
-        cartService.addCart();
-        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "success"));
+    @GetMapping("/info")
+    public ResponseEntity<ResponseMessage<CartInfoResponseDto>> getCartList() {
+        CartInfoResponseDto cartInfo = cartService.getCartInfo();
+        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", cartInfo), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "장바구니 목록 조회")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "장바구니 목록 조회 성공")
-    })
-    @GetMapping("/list")
-    public ResponseEntity<ResponseMessage<List<CartListResponseDto>>> getCartList() {
-        List<CartListResponseDto> cartList = cartService.getCartList();
-        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", cartList), HttpStatus.OK);
+    @GetMapping("/{cartId}")
+    public void findCartItemList(@PathVariable Long cartId) {
+        // TODO: 장바구니에 있는 상품 목록 가져오기
     }
 }
