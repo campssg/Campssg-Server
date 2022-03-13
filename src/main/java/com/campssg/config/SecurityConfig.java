@@ -59,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/login").permitAll()
                 .antMatchers("/api/v1/register/**").permitAll()
                 .antMatchers("api/v1/user/**").hasAnyRole("GUEST", "MANAGER")
+                .antMatchers("/api/v1/cart/**").hasAnyRole("GUEST")
 
                 .anyRequest().authenticated()
 
