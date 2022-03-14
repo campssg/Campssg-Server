@@ -23,13 +23,7 @@ public class CartController {
             @ApiResponse(code = 200, message = "장바구니 조회 성공")
     })
     @GetMapping("/info")
-    public ResponseEntity<ResponseMessage<CartInfoResponseDto>> getCartList() {
-        CartInfoResponseDto cartInfo = cartService.getCartInfo();
-        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", cartInfo), HttpStatus.OK);
-    }
-
-    @GetMapping("/{cartId}")
-    public void findCartItemList(@PathVariable Long cartId) {
-        // TODO: 장바구니에 있는 상품 목록 가져오기
+    public ResponseEntity<ResponseMessage<CartInfoResponseDto>> getCart() {
+        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", cartService.getCartInfo()), HttpStatus.OK);
     }
 }

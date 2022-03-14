@@ -6,9 +6,9 @@ import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
 @Setter
+@Builder
 @Entity
 @Table(name = "cart_item")
 public class CartItem {
@@ -28,6 +28,7 @@ public class CartItem {
     @Column(name = "cart_item_count")
     private Integer cartItemCount;
 
-    @Column(name = "cart_item_price")
-    private Integer cartItemPrice;
+    public void addCount(int count) {
+        this.cartItemCount += count;
+    }
 }

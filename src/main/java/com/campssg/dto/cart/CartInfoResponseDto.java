@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class CartInfoResponseDto {
     private Long cartId;
     private int totalCount;
-    private Long totalPrice;
+    private int totalPrice;
 
     public CartInfoResponseDto(Cart cart) {
         this.cartId = cart.getCartId();
