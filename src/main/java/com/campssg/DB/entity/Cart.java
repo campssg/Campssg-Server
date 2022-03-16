@@ -22,10 +22,10 @@ public class Cart extends Auditor {
     private User user;
 
     @Column(name = "total_count")
-    private Integer totalCount;
+    private int totalCount;
 
     @Column(name = "total_price")
-    private Integer totalPrice;
+    private int totalPrice;
 
     public void addTotalCount(int count) {
         this.totalCount += count;
