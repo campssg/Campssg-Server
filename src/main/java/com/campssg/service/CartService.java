@@ -6,11 +6,14 @@ import com.campssg.DB.repository.CartRepository;
 import com.campssg.DB.repository.ProductRepository;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.dto.cart.CartInfoResponseDto;
-import com.campssg.dto.cart.CartItemRequestDto;
+import com.campssg.dto.cart.AddCartItemRequestDto;
 import com.campssg.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,16 +30,17 @@ public class CartService {
          User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
          Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseGet(Cart::new); // 사용자 아이디 값으로 장바구니 가져오기
          if (cart.getCartId() == null) {
-             cartRepository.save(Cart.builder().user(user).build()); // 없을 경우 장바구니 등록
+             cartRepository.save(Cart.builder().user(user).totalCount(0).totalPrice(0).build()); // 없을 경우 장바구니 등록
          }
-         // TODO: 장바구니에 있는 상품 목록 반환
-         // TODO: 장바구니에 있는 총 상품 개수 반환
-         // TODO: 장바구니에 있는 총 상품 가격 반환
-         return new CartInfoResponseDto(cart);
+
+         List<CartItem> cartItemList = cartItemRepository.findByCart_cartId(cart.getCartId()); // 장바구니에 있는 상품 목록 가져오기
+         List<CartInfoResponseDto.CartItemList> cartItemLists = cartItemList.stream()
+                 .map(cartItem -> new CartInfoResponseDto().new CartItemList(cartItem)).collect(Collectors.toList());
+         return new CartInfoResponseDto(cart, cartItemLists);
      }
 
      // 장바구니에 상품 담기
-     public void addCartItem(Long productId, CartItemRequestDto requestDto) {
+     public void addCartItem(Long productId, AddCartItemRequestDto requestDto) {
          User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
          Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseGet(Cart::new); // 사용자 아이디 값으로 장바구니 가져오기
          if (cart.getCartId() == null) {
@@ -58,6 +62,7 @@ public class CartService {
              cartItemRepository.save(cartItem);
          }
 
-         cart.setTotalCount(cart.getTotalCount() + requestDto.getCount()); // 장바구니 상품 총 개수 증가
+         cart.addTotalCount(requestDto.getCount()); // 장바구니 상품 총 개수 증가
+         cart.addTotalPrice(requestDto.getCount(), cartItem.getProduct().getProductPrice()); // 장바구니 상품 총 가격 증가
      }
 }

@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CartItemRequestDto {
-    private int count;
+public class AddCartItemRequestDto {
+    private int count; // 장바구니에 추가할 물품 수량
 }

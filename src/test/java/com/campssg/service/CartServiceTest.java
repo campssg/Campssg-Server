@@ -2,7 +2,6 @@ package com.campssg.service;
 
 import com.campssg.DB.entity.Cart;
 import com.campssg.DB.entity.CartItem;
-import com.campssg.DB.entity.Product;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.CartItemRepository;
 import com.campssg.DB.repository.CartRepository;

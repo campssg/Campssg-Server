@@ -3,8 +3,6 @@ package com.campssg.DB.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,12 +21,18 @@ public class Cart extends Auditor {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart")
-    private List<CartItem> cartItemList = new ArrayList<>();
-
     @Column(name = "total_count")
     private Integer totalCount;
 
     @Column(name = "total_price")
     private Integer totalPrice;
+
+    public void addTotalCount(int count) {
+        this.totalCount += count;
+    }
+
+    public void addTotalPrice(int count, String price) {
+        int productPrice = Integer.parseInt(price);
+        this.totalPrice += count * productPrice;
+    }
 }
