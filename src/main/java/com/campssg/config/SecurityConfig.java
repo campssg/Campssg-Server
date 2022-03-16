@@ -43,9 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
@@ -56,13 +53,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
+                .antMatchers(
+                "/favicon.ico"
+                ,"/error"
+                ,"/swagger-ui/**"
+                ,"/swagger-resources/**"
+                ,"/v2/api-docs").permitAll()
                 .antMatchers("/api/v1/login").permitAll()
                 .antMatchers("/api/v1/register/**").permitAll()
+                .antMatchers("api/v1/user/**").hasAnyRole("USER")
+                .antMatchers("api/v1/manager/**").hasAnyRole("MANAGER")
                 .antMatchers("api/v1/user/**").hasAnyRole("GUEST", "MANAGER")
-
                 .anyRequest().authenticated()
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
+
+        http.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class);
+
     }
 }

@@ -39,9 +39,9 @@ public class SwaggerConfig extends WebMvcConfigurerAdapter {
             .select()
             .apis(RequestHandlerSelectors.basePackage("com.campssg"))
             .paths(PathSelectors.any())
-            .build();
-            // .securityContexts(Arrays.asList(securityContext()))
-            // .securitySchemes(Arrays.asList(apiKey()));
+            .build()
+            .securityContexts(Arrays.asList(securityContext()))
+            .securitySchemes(Arrays.asList(apiKey()));
     }
 
     private ApiKey apiKey() {
