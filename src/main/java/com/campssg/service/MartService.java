@@ -5,6 +5,7 @@ import com.campssg.DB.entity.Product;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.MartRepository;
 import com.campssg.DB.repository.ProductRepository;
+import com.campssg.DB.repository.UserRepository;
 import com.campssg.common.OpenApi;
 import com.campssg.common.S3Uploder;
 import com.campssg.dto.mart.MartCertificationRequestDto;
@@ -29,11 +30,14 @@ public class MartService {
 
     private final ProductRepository productRepository;
 
+    private final UserRepository userRepository;
+
     private final OpenApi openApi;
 
     private final S3Uploder s3Uploder;
 
     public void saveMart(MartSaveRequestDto requestDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         boolean isValidate = openApi.martValidationOpenApi(
             MartCertificationRequestDto.builder()
                 .bNo(requestDto.getBNo())
@@ -43,18 +47,20 @@ public class MartService {
                 .startDt(requestDto.getStartDt())
                 .build());
         if (isValidate) {
-            martRepository.save(requestDto.toEntity(requestDto.getUserId()));
+            martRepository.save(requestDto.toEntity(user));
         } else {
             throw new IllegalArgumentException("마트 인증에 실패하였습니다.");
         }
     }
 
-    public List<MartListResponseDto> findByUserId(Long userId) {
-        List<Mart> martList = martRepository.findByUser_userId(userId);
+    public List<MartListResponseDto> findByUserId() {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
         return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
     }
 
     public void saveProductToMart(ProductSaveRequest requestDto, MultipartFile file) throws IOException {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         String imgUrl = file == null ? null : s3Uploder.upload(file, "product");
         requestDto.setProductImgUrl(imgUrl);
         productRepository.save(requestDto.toEntity());

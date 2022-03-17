@@ -27,7 +27,6 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 3, required = true, dataType = "String", value = "개업일 YYYYMMDD")
     private String startDt;
 
-    @NotNull(message = "사용자 식별번호 필수입니다.")
     @ApiModelProperty(position = 4, required = true, dataType = "Long", value = "사용자 식별번호")
     private Long userId;
 
@@ -51,14 +50,14 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 9, required = true, dataType = "Long", value = "마트 물품 요청 ")
     private Long requestYn;
 
-    public Mart toEntity(Long userId) {
+    public Mart toEntity(User user) {
         return Mart.builder()
             .martName(martName)
             .martAddress(martAddress)
             .openTime(openTime)
             .closeTime(closeTime)
             .requestYn(requestYn)
-            .user(new User(userId))
+            .user(user)
             .build();
     }
 }

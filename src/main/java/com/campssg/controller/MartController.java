@@ -50,9 +50,9 @@ public class MartController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "마트 조회 완료")
     })
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList(@PathVariable Long userId) {
-        List<MartListResponseDto> response = martService.findByUserId(userId);
+    @GetMapping("/info")
+    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList() {
+        List<MartListResponseDto> response = martService.findByUserId();
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 조회 성공", response), HttpStatus.OK);
     }
 
