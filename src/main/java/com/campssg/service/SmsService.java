@@ -92,7 +92,7 @@ public class SmsService {
 
     // 생성한 인증번호 일치 확인하기
     public ResponseMessage verifySms(SmsCertificationRequestDto smsCertificationRequestDto) {
-        Certification certification = certificationRepository.findByPhoneNumber(smsCertificationRequestDto.getPhoneNumber()).orElseThrow();
+        Certification certification = certificationRepository.findByPhoneNumber(smsCertificationRequestDto.getPhoneNumber()).orElseThrow(null);
         LocalDateTime localDateTime = LocalDateTime.now();
         long seconds = ChronoUnit.SECONDS.between(certification.getUpdatedAt(), localDateTime); // 인증 시간 확인
         if (seconds > 180) {
