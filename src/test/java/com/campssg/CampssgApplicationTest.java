@@ -15,14 +15,6 @@ import java.text.ParseException;
 
 @SpringBootTest
 public class CampssgApplicationTest {
-    @Autowired
-    private SmsService smsService;
-
-    @Test
-    void sendSms() throws JsonProcessingException, ParseException, UnsupportedEncodingException, URISyntaxException,
-            NoSuchAlgorithmException, InvalidKeyException {
-        smsService.sendSms("수신번호");
-    }
 
     @Test
     void contextLoads() {
