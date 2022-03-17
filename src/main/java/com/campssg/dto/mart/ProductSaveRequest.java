@@ -35,6 +35,9 @@ public class ProductSaveRequest {
     @ApiModelProperty(position = 5, required = true, dataType = "int", value = "상품 재고")
     private int productStock;
 
+    @ApiModelProperty(position = 6, hidden = true, dataType = "String", value = "상품 이미지")
+    private String productImgUrl;
+
     public Product toEntity() {
         return Product.builder()
             .category(new Category(categoryId))
@@ -42,6 +45,7 @@ public class ProductSaveRequest {
             .productName(productName)
             .productPrice(productPrice)
             .productStock(productStock)
+            .productImgUrl(productImgUrl)
             .build();
     }
 }
