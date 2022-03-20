@@ -1,6 +1,5 @@
 package com.campssg.controller;
 
-import com.campssg.DB.entity.Cart;
 import com.campssg.dto.ResponseMessage;
 import com.campssg.dto.cart.CartInfoResponseDto;
 import com.campssg.service.CartService;
