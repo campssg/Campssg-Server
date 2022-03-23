@@ -1,5 +1,6 @@
 package com.campssg.service;
 
+import com.campssg.dto.camping.CampingList;
 import com.campssg.dto.camping.CampingRequestDto;
 import com.campssg.dto.camping.CampingResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,11 @@ public class CampingService {
     private String serviceKey;
 
     // 키워드 기반으로 캠핑장 검색
-    public List<CampingResponseDto> searchKeyword(String keyword) throws IOException, ParseException {
+    public CampingResponseDto<CampingList> searchKeyword(String keyword, String page) throws IOException, ParseException {
         // 공공데이터 api 호출을 위한 url 객체 생성
         URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/GoCamping/searchList?serviceKey="
-                +this.serviceKey+"&numOfRows=50&pageNo=1&MobileOS=ETC&MobileApp=campssg&_type=json&keyword="+ URLEncoder.encode(keyword, StandardCharsets.UTF_8));
+                +this.serviceKey+"&numOfRows=20&pageNo=" +
+                page + "&MobileOS=ETC&MobileApp=campssg&_type=json&keyword="+ URLEncoder.encode(keyword, StandardCharsets.UTF_8));
 
         // 공공데이터 api 호출을 위한 Connection 객체 생성
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -60,22 +62,29 @@ public class CampingService {
         JSONObject items = (JSONObject) body.get("items");
         JSONArray item = (JSONArray) items.get("item");
 
-        List<CampingResponseDto> campingList = new ArrayList<CampingResponseDto>();
+        // 전체 결과 수와 페이지 수 추출
+        String totalCount = body.get("totalCount").toString();
+        String pageNo = body.get("pageNo").toString();
+
+        // JSONArray 하나씩 파싱하면서 원하는 정보만 추출하여 리스트에 저장
+        List<CampingList> campingLists = new ArrayList<>();
         for (int i=0;i<item.size();i++) {
             JSONObject obj = (JSONObject) item.get(i);
-            CampingResponseDto campingResponseDto = new CampingResponseDto(obj);
-            campingList.add(campingResponseDto);
+            CampingList campingList1 = new CampingList(obj);
+            campingLists.add(campingList1);
         }
 
-        return campingList;
+        return new CampingResponseDto<CampingList>(totalCount, pageNo, campingLists);
     }
 
     // 위치 기반으로 캠핑장 검색
-    public List<CampingResponseDto> searchPlace(CampingRequestDto requestDto) throws IOException, ParseException {
+    public CampingResponseDto<CampingList> searchPlace(CampingRequestDto requestDto, String page) throws IOException, ParseException {
         // 공공데이터 api 호출을 위한 url 객체 생성
         URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/GoCamping/locationBasedList?serviceKey=" +
                 this.serviceKey +
-                "&pageNo=1&numOfRows=50&MobileOS=ETC&MobileApp=campssg&mapX=" +
+                "&pageNo=" +
+                page +
+                "&numOfRows=20&MobileOS=ETC&MobileApp=campssg&mapX=" +
                 requestDto.getMapX() +
                 "&mapY=" +
                 requestDto.getMapY() +
@@ -106,13 +115,18 @@ public class CampingService {
         JSONObject items = (JSONObject) body.get("items");
         JSONArray item = (JSONArray) items.get("item");
 
-        List<CampingResponseDto> campingList = new ArrayList<CampingResponseDto>();
+        // 전체 결과 수와 페이지 수 추출
+        String totalCount = body.get("totalCount").toString();
+        String pageNo = body.get("pageNo").toString();
+
+        // JSONArray 하나씩 파싱하면서 원하는 정보만 추출하여 리스트에 저장
+        List<CampingList> campingLists = new ArrayList<>();
         for (int i=0;i<item.size();i++) {
             JSONObject obj = (JSONObject) item.get(i);
-            CampingResponseDto campingResponseDto = new CampingResponseDto(obj);
-            campingList.add(campingResponseDto);
+            CampingList campingList1 = new CampingList(obj);
+            campingLists.add(campingList1);
         }
 
-        return campingList;
+        return new CampingResponseDto<CampingList>(totalCount, pageNo, campingLists);
     }
 }

@@ -1,5 +1,6 @@
 package com.campssg.controller;
 
+import com.campssg.dto.camping.CampingList;
 import com.campssg.dto.camping.CampingRequestDto;
 import com.campssg.dto.camping.CampingResponseDto;
 import com.campssg.service.CampingService;
@@ -25,17 +26,19 @@ public class CampingController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "캠핑장 조회 성공")
     })
-    @GetMapping("/{keyword}")
-    public ResponseEntity<List<CampingResponseDto>> searchKeyword(@PathVariable String keyword) throws IOException, ParseException {
-        return ResponseEntity.ok(campingService.searchKeyword(keyword));
+    @GetMapping("/{keyword}/{page}")
+    public ResponseEntity<CampingResponseDto<CampingList>> searchKeyword(
+            @PathVariable String keyword, @PathVariable String page) throws IOException, ParseException {
+        return ResponseEntity.ok(campingService.searchKeyword(keyword, page));
     }
 
     @ApiOperation(value = "위치 기반 캠핑장 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "캠핑장 조회 성공")
     })
-    @GetMapping("/place")
-    public ResponseEntity<List<CampingResponseDto>> searchPlace(@RequestBody @Valid CampingRequestDto requestDto) throws IOException, ParseException {
-        return ResponseEntity.ok(campingService.searchPlace(requestDto));
+    @GetMapping("/place/{page}")
+    public ResponseEntity<CampingResponseDto<CampingList>> searchPlace(
+            @RequestBody @Valid CampingRequestDto requestDto, @PathVariable String page) throws IOException, ParseException {
+        return ResponseEntity.ok(campingService.searchPlace(requestDto, page));
     }
 }
