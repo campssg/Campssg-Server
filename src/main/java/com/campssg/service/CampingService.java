@@ -1,7 +1,9 @@
 package com.campssg.service;
 
 import com.campssg.dto.camping.CampingRequestDto;
+import com.campssg.dto.camping.CampingResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -14,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,7 +28,7 @@ public class CampingService {
     private String serviceKey;
 
     // 키워드 기반으로 캠핑장 검색
-    public JSONObject searchKeyword(String keyword) throws IOException, ParseException {
+    public List<CampingResponseDto> searchKeyword(String keyword) throws IOException, ParseException {
         // 공공데이터 api 호출을 위한 url 객체 생성
         URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/GoCamping/searchList?serviceKey="
                 +this.serviceKey+"&numOfRows=50&pageNo=1&MobileOS=ETC&MobileApp=campssg&_type=json&keyword="+ URLEncoder.encode(keyword, StandardCharsets.UTF_8));
@@ -51,16 +55,23 @@ public class CampingService {
         // 문자열 형태로 저장된 JSON을 파싱하기 위한 JSONParser 객체 생성
         JSONParser parser = new JSONParser();
         JSONObject object = (JSONObject) parser.parse(sb.toString());
-        // JSONObject response = (JSONObject) object.get("response");
-        // JSONObject body = (JSONObject) response.get("body");
-        // JSONObject items = (JSONObject) body.get("items");
-        // JSONArray item = (JSONArray) items.get("item");
+        JSONObject response = (JSONObject) object.get("response");
+        JSONObject body = (JSONObject) response.get("body");
+        JSONObject items = (JSONObject) body.get("items");
+        JSONArray item = (JSONArray) items.get("item");
 
-        return object;
+        List<CampingResponseDto> campingList = new ArrayList<CampingResponseDto>();
+        for (int i=0;i<item.size();i++) {
+            JSONObject obj = (JSONObject) item.get(i);
+            CampingResponseDto campingResponseDto = new CampingResponseDto(obj);
+            campingList.add(campingResponseDto);
+        }
+
+        return campingList;
     }
 
     // 위치 기반으로 캠핑장 검색
-    public JSONObject searchPlace(CampingRequestDto requestDto) throws IOException, ParseException {
+    public List<CampingResponseDto> searchPlace(CampingRequestDto requestDto) throws IOException, ParseException {
         // 공공데이터 api 호출을 위한 url 객체 생성
         URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/GoCamping/locationBasedList?serviceKey=" +
                 this.serviceKey +
@@ -69,8 +80,6 @@ public class CampingService {
                 "&mapY=" +
                 requestDto.getMapY() +
                 "&radius=20000&_type=json");
-
-        System.out.println(url);
 
         // 공공데이터 api 호출을 위한 Connection 객체 생성
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -92,7 +101,18 @@ public class CampingService {
         // 문자열 형태로 저장된 JSON을 파싱하기 위한 JSONParser 객체 생성
         JSONParser parser = new JSONParser();
         JSONObject object = (JSONObject) parser.parse(sb.toString());
+        JSONObject response = (JSONObject) object.get("response");
+        JSONObject body = (JSONObject) response.get("body");
+        JSONObject items = (JSONObject) body.get("items");
+        JSONArray item = (JSONArray) items.get("item");
 
-        return object;
+        List<CampingResponseDto> campingList = new ArrayList<CampingResponseDto>();
+        for (int i=0;i<item.size();i++) {
+            JSONObject obj = (JSONObject) item.get(i);
+            CampingResponseDto campingResponseDto = new CampingResponseDto(obj);
+            campingList.add(campingResponseDto);
+        }
+
+        return campingList;
     }
 }
