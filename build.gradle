@@ -30,8 +30,16 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	// swagger
-	implementation("io.springfox:springfox-boot-starter:3.0.0")
-	implementation("io.springfox:springfox-swagger-ui:3.0.0")
+	//implementation("io.springfox:springfox-boot-starter:3.0.0")
+	// implementation("io.springfox:springfox-swagger-ui:3.0.0")
+	compile("io.springfox:springfox-swagger2:2.9.2") {
+		exclude module: 'swagger-annotations'
+		exclude module: 'swagger-models'
+	}
+	compile("io.swagger:swagger-annotations:1.5.21")
+	compile("io.swagger:swagger-models:1.5.21")
+	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+
 
 	// jwt
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
