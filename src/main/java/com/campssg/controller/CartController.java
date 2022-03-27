@@ -40,7 +40,7 @@ public class CartController {
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "삭제가 완료되었습니다"));
     }
 
-    @ApiOperation(value = "장바구니 가격 비교")
+    @ApiOperation(value = "현재 위치 기반 마트 주변에 장바구니 재고 및 가격비교")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "장바구니 가격 비교")
     })
