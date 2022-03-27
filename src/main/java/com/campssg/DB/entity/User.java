@@ -27,6 +27,9 @@ public class User extends Auditor {
     @Column(name = "user_name", length = 45, nullable = false)
     private String userName;
 
+    @Column(name = "user_img", length = 256, nullable = false)
+    private String userImg;
+
     @Column(name = "user_nickname", length = 45)
     private String userNickname;
 

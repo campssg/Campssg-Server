@@ -7,6 +7,7 @@ import com.campssg.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -27,25 +29,27 @@ public class UserController {
 
     @ApiOperation(value = "서비스 이용자 권한 및 정보 등록")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "서비스 이용자 권한 및 정보 등록 완료")
+        @ApiResponse(code = 200, message = "서비스 이용자 권한 및 정보 등록 완료")
     })
     @PostMapping("/register/guest")
-    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.registerUser(userDto));
+    public ResponseEntity<UserDto> registerUser(@Valid @ModelAttribute UserDto userDto,
+        @RequestPart(value = "img", required = false) MultipartFile file) throws IOException {
+        return ResponseEntity.ok(userService.registerUser(userDto, file));
     }
 
     @ApiOperation(value = "마트 운영자 권한 및 정보 등록")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "마트 운영자 권한 및 정보 등록 완료")
+        @ApiResponse(code = 200, message = "마트 운영자 권한 및 정보 등록 완료")
     })
     @PostMapping("/register/manager")
-    public ResponseEntity<UserDto> registerManager(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.registerManager(userDto));
+    public ResponseEntity<UserDto> registerManager(@Valid @ModelAttribute UserDto userDto,
+        @RequestPart(value = "img", required = false) MultipartFile file) throws IOException {
+        return ResponseEntity.ok(userService.registerManager(userDto, file));
     }
 
     @ApiOperation(value = "사용자 로그인")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "사용자 로그인 완료")
+        @ApiResponse(code = 200, message = "사용자 로그인 완료")
     })
     @PostMapping("/login")
     public ResponseEntity<ResponseMessage<TokenDto>> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
@@ -55,12 +59,12 @@ public class UserController {
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + tokenDto.getToken());
 
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "조회 성공", tokenDto),
-                httpHeaders, HttpStatus.OK);
+            httpHeaders, HttpStatus.OK);
     }
 
     @ApiOperation(value = "사용자 정보 조회")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
+        @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
     })
     @GetMapping("/user/info")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
@@ -70,7 +74,7 @@ public class UserController {
 
     @ApiOperation(value = "사용자 정보 조회")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
+        @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
     })
     @PatchMapping("/user/update/nickname")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
@@ -80,7 +84,7 @@ public class UserController {
 
     @ApiOperation(value = "비밀번호 변경")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "비밀번호 변경 완료")
+        @ApiResponse(code = 200, message = "비밀번호 변경 완료")
     })
     @PatchMapping("/user/update/password")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
@@ -90,7 +94,7 @@ public class UserController {
 
     @ApiOperation(value = "회원 탈퇴")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "회원 탈퇴 완료")
+        @ApiResponse(code = 200, message = "회원 탈퇴 완료")
     })
     @PostMapping("/user/delete")
     public ResponseEntity<ResponseMessage> deleteUser(@RequestBody DeleteRequestDto deleteRequestDto) {
