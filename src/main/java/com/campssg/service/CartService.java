@@ -89,14 +89,16 @@ public class CartService {
         List<CartItemList> cartList = getCartInfo().getCartItemList();
         for (Mart mart : aroundMart) {
             int totalPrice = getCartInfo().getTotalPrice();
+            int notExistCnt = 0;
             for (CartItemList cart : cartList) {
                 // 재고가 없는 물품
                 List<Product> notExistsProduct = productRepository.findByProductIdAndMart_martIdAndProductStockIs0(cart.getCartItemId(), mart.getMartId());
                 for (Product product : notExistsProduct) {
                     totalPrice -= product.getProductPrice() * cart.getCartItemCount();
                 }
-                responseDto.add(new CartComparison(mart, notExistsProduct.size(), totalPrice));
+                notExistCnt = notExistsProduct.size();
             }
+            responseDto.add(new CartComparison(mart, notExistCnt, totalPrice));
         }
         return new CartComparisonListResponseDto(responseDto);
     }
