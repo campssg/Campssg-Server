@@ -72,9 +72,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyInfo());
     }
 
-    @ApiOperation(value = "사용자 정보 조회")
+    @ApiOperation(value = "닉네임 추가 또는 수정")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
+            @ApiResponse(code = 200, message = "닉네임 추가 또는 수정 완료")
     })
     @PatchMapping("/user/update/nickname")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")

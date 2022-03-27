@@ -73,6 +73,14 @@ public class CartService {
          cart.addTotalPrice(requestDto.getCount(), cartItem.getProduct().getProductPrice()); // 장바구니 상품 총 가격 증가
      }
 
+     // 장바구니에 있는 상품 삭제
+     public void deleteCartItem(Long cartItemId) {
+         CartItem cartItem = cartItemRepository.findByCartItemId(cartItemId);
+         if (cartItem != null) { // 장바구니에 상품이 있을 경우 삭제
+             cartItemRepository.delete(cartItem);
+         }
+     }
+
     public CartComparisonListResponseDto getCartComparison(Long latitude, Long longitude) {
         List<CartComparisonListResponseDto.CartComparison> responseDto = new ArrayList<>();
         // 현재 주변 마트 리스트
