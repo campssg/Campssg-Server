@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/search/mart")
+@RequestMapping("/search/mart")
 public class SearchMartController {
 
     private final CartService cartService;

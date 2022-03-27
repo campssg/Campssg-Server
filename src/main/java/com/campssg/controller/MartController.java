@@ -79,4 +79,24 @@ public class MartController {
         @PathVariable Long martId) {
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 상품 조회 성공", martService.findProductByMartId(martId)), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "마트 상품 재고 추가")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "마트 상품 재고 추가 성공")
+    })
+    @PostMapping("/{productId}/{count}")
+    public ResponseEntity<ResponseMessage> addProductStock(@PathVariable Long productId, @PathVariable int count) {
+        martService.addProductStock(productId, count);
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "재고 추가가 완료되었습니다"));
+    }
+
+    @ApiOperation(value = "마트 상품 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "마트 상품 삭제 성공")
+    })
+    @PostMapping("/delete/{productId}")
+    public ResponseEntity<ResponseMessage> addProductStock(@PathVariable Long productId) {
+        martService.deleteProduct(productId);
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "삭제가 완료되었습니다"));
+    }
 }

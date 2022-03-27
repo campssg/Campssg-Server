@@ -73,4 +73,19 @@ public class MartService {
             .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
         return new ProductListResponse(productLists);
     }
+
+    public void addProductStock(Long productId, int count) { // 기존에 있는 마트 상품 재고만 추가
+        Product product = productRepository.findByProductId(productId);
+        if (product != null) { // 마트에 상품이 존재할 경우 재고 추가
+            product.setProductStock(product.getProductStock() + count);
+            productRepository.save(product);
+        }
+    }
+
+    public void deleteProduct(Long productId) { // 마트에 있는 상품 삭제
+        Product product = productRepository.findByProductId(productId);
+        if (product != null) { // 마트에 상품이 존재할 경우 삭제
+            productRepository.delete(product);
+        }
+    }
 }
