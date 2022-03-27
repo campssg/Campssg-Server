@@ -31,8 +31,8 @@ public class Cart extends Auditor {
         this.totalCount += count;
     }
 
-    public void addTotalPrice(int count, String price) {
-        int productPrice = Integer.parseInt(price);
+    public void addTotalPrice(int count, int price) {
+        int productPrice = price;
         this.totalPrice += count * productPrice;
     }
 }

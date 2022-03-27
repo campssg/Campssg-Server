@@ -29,7 +29,7 @@ public class ProductSaveRequest {
 
     @NotNull(message = "상품가격은 필수입니다.")
     @ApiModelProperty(position = 4, required = true, dataType = "String", value = "상품가격")
-    private String productPrice;
+    private int productPrice;
 
     @NotNull(message = "상품 재고는 필수입니다.")
     @ApiModelProperty(position = 5, required = true, dataType = "int", value = "상품 재고")

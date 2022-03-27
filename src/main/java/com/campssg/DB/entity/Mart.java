@@ -1,7 +1,5 @@
 package com.campssg.DB.entity;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +11,6 @@ import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 @NoArgsConstructor
 @Getter
@@ -45,9 +42,15 @@ public class Mart extends Auditor {
     @Column(name = "request_yn")
     private Long requestYn;
 
+    @Column(name = "latitude")
+    private Long latitude;
+
+    @Column(name = "longitude")
+    private Long longitude;
+
     @Builder
     public Mart(Long martId, User user, String martName, String martAddress, Long requestYn, String openTime,
-        String closeTime) {
+        String closeTime, Long latitude, Long longitude) {
         this.martId = martId;
         this.user = user;
         this.martName = martName;
@@ -55,6 +58,8 @@ public class Mart extends Auditor {
         this.requestYn = requestYn;
         this.openTime = openTime;
         this.closeTime = closeTime;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     @Builder(builderClassName = "ByMartIdBuilder", builderMethodName = "ByMartIdBuilder")

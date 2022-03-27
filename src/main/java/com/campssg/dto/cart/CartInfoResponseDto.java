@@ -24,11 +24,13 @@ public class CartInfoResponseDto<CartItemList> {
 
     @Getter
     public class CartItemList {
+        private Long cartItemId;
         private String cartItemName;
-        private String cartItemPrice;
+        private int cartItemPrice;
         private int cartItemCount;
 
         public CartItemList(CartItem cartItem) {
+            this.cartItemId = cartItem.getProduct().getProductId();
             this.cartItemName = cartItem.getProduct().getProductName();
             this.cartItemPrice = cartItem.getProduct().getProductPrice();
             this.cartItemCount = cartItem.getCartItemCount();

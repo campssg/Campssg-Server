@@ -23,7 +23,7 @@ public class ProductListResponse {
 
         private String productName;
 
-        private String productPrice;
+        private int productPrice;
 
         private int productStock;
 

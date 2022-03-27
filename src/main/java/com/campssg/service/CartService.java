@@ -3,11 +3,16 @@ package com.campssg.service;
 import com.campssg.DB.entity.*;
 import com.campssg.DB.repository.CartItemRepository;
 import com.campssg.DB.repository.CartRepository;
+import com.campssg.DB.repository.MartRepository;
 import com.campssg.DB.repository.ProductRepository;
 import com.campssg.DB.repository.UserRepository;
+import com.campssg.dto.cart.CartComparisonListResponseDto;
+import com.campssg.dto.cart.CartComparisonListResponseDto.CartComparison;
 import com.campssg.dto.cart.CartInfoResponseDto;
 import com.campssg.dto.cart.AddCartItemRequestDto;
+import com.campssg.dto.cart.CartInfoResponseDto.CartItemList;
 import com.campssg.util.SecurityUtil;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +29,7 @@ public class CartService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
+    private final MartRepository martRepository;
 
     // 내 장바구니 정보 확인 - 담겨 있는 상품 목록, 총 개수, 총 가격
      public CartInfoResponseDto getCartInfo() {
@@ -66,4 +72,24 @@ public class CartService {
          cart.addTotalCount(requestDto.getCount()); // 장바구니 상품 총 개수 증가
          cart.addTotalPrice(requestDto.getCount(), cartItem.getProduct().getProductPrice()); // 장바구니 상품 총 가격 증가
      }
+
+    public CartComparisonListResponseDto getCartComparison(Long latitude, Long longitude) {
+        List<CartComparisonListResponseDto.CartComparison> responseDto = new ArrayList<>();
+        // 현재 주변 마트 리스트
+        List<Mart> aroundMart = martRepository.findAroundMart(latitude, longitude);
+        // 마트 id 상품 id 재고가 마트에 있는지 확인
+        List<CartItemList> cartList = getCartInfo().getCartItemList();
+        for (Mart mart : aroundMart) {
+            int totalPrice = getCartInfo().getTotalPrice();
+            for (CartItemList cart : cartList) {
+                // 재고가 없는 물품
+                List<Product> notExistsProduct = productRepository.findByProductIdAndMart_martIdAndProductStockIs0(cart.getCartItemId(), mart.getMartId());
+                for (Product product : notExistsProduct) {
+                    totalPrice -= product.getProductPrice() * cart.getCartItemCount();
+                }
+                responseDto.add(new CartComparison(mart, notExistsProduct.size(), totalPrice));
+            }
+        }
+        return new CartComparisonListResponseDto(responseDto);
+    }
 }

@@ -3,10 +3,17 @@ package com.campssg.service;
 import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.UserRepository;
+import com.campssg.common.S3Uploder;
 import com.campssg.config.jwt.TokenProvider;
-import com.campssg.dto.user.*;
+import com.campssg.dto.user.DeleteRequestDto;
+import com.campssg.dto.user.LoginRequestDto;
+import com.campssg.dto.user.NicknameDto;
+import com.campssg.dto.user.PasswordDto;
+import com.campssg.dto.user.TokenDto;
+import com.campssg.dto.user.UserDto;
 import com.campssg.exception.DuplicateMemberException;
 import com.campssg.util.SecurityUtil;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserService {
@@ -26,45 +34,53 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final S3Uploder s3Uploder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+        TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, S3Uploder s3Uploder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.s3Uploder = s3Uploder;
     }
 
     @Transactional
-    public UserDto registerUser(UserDto userDto) {
+    public UserDto registerUser(UserDto userDto, MultipartFile file) throws IOException {
         if (userRepository.findByUserEmail(userDto.getUserEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다");
         }
 
+        String imgUrl = file == null ? null : s3Uploder.upload(file, "user");
+
         User user = User.builder()
-                .userEmail(userDto.getUserEmail())
-                .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
-                .userName(userDto.getUserName())
-                .phoneNumber(userDto.getPhoneNumber())
-                .userRole(Role.ROLE_GUEST)
-                .build();
+            .userEmail(userDto.getUserEmail())
+            .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
+            .userName(userDto.getUserName())
+            .userImg(imgUrl)
+            .phoneNumber(userDto.getPhoneNumber())
+            .userRole(Role.ROLE_GUEST)
+            .build();
 
         return UserDto.from(userRepository.save(user));
     }
 
     @Transactional
-    public UserDto registerManager(UserDto userDto) {
+    public UserDto registerManager(UserDto userDto, MultipartFile file) throws IOException {
         if (userRepository.findByUserEmail(userDto.getUserEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다");
         }
 
+        String imgUrl = file == null ? null : s3Uploder.upload(file, "user");
+
         User user = User.builder()
-                .userEmail(userDto.getUserEmail())
-                .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
-                .userName(userDto.getUserName())
-                .phoneNumber(userDto.getPhoneNumber())
-                .userRole(Role.ROLE_MANAGER)
-                .build();
+            .userEmail(userDto.getUserEmail())
+            .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
+            .userName(userDto.getUserName())
+            .userImg(imgUrl)
+            .phoneNumber(userDto.getPhoneNumber())
+            .userRole(Role.ROLE_MANAGER)
+            .build();
 
         return UserDto.from(userRepository.save(user));
     }
@@ -72,7 +88,7 @@ public class UserService {
     @Transactional
     public TokenDto login(LoginRequestDto loginRequestDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getUserEmail(), loginRequestDto.getUserPassword());
+            new UsernamePasswordAuthenticationToken(loginRequestDto.getUserEmail(), loginRequestDto.getUserPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);

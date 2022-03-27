@@ -35,7 +35,7 @@ public class Product {
     private String productName;
 
     @Column(name = "product_price")
-    private String productPrice;
+    private int productPrice;
 
     @Column(name = "product_stock")
     private int productStock;
@@ -44,7 +44,7 @@ public class Product {
     private String productImgUrl;
 
     @Builder
-    public Product(Category category, Mart mart, String productName, String productPrice, int productStock,
+    public Product(Category category, Mart mart, String productName, int productPrice, int productStock,
         String productImgUrl) {
         this.category = category;
         this.mart = mart;
