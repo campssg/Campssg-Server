@@ -30,7 +30,7 @@ public class CartInfoResponseDto<CartItemList> {
         private int cartItemCount;
 
         public CartItemList(CartItem cartItem) {
-            this.cartItemId = cartItem.getProduct().getProductId();
+            this.cartItemId = cartItem.getCartItemId();
             this.cartItemName = cartItem.getProduct().getProductName();
             this.cartItemPrice = cartItem.getProduct().getProductPrice();
             this.cartItemCount = cartItem.getCartItemCount();

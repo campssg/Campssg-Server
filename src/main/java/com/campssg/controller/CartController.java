@@ -21,6 +21,16 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService cartService;
 
+    @ApiOperation(value = "장바구니 추가")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "장바구니 추가 성공")
+    })
+    @PostMapping("/add")
+    public ResponseEntity<ResponseMessage> addCart() {
+        cartService.addCart();
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "장바구니가 추가되었습니다"));
+    }
+
     @ApiOperation(value = "장바구니 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "장바구니 조회 성공")
