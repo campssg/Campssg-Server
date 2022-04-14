@@ -26,7 +26,7 @@ public class CartItem {
     private Product product;
 
     @Column(name = "cart_item_count")
-    private Integer cartItemCount;
+    private int cartItemCount;
 
     public void addCount(int count) {
         this.cartItemCount += count;
