@@ -2,9 +2,7 @@ package com.campssg.service;
 
 import com.campssg.DB.entity.*;
 import com.campssg.DB.repository.*;
-import com.campssg.dto.order.OrderItemList;
-import com.campssg.dto.order.OrderRequestDto;
-import com.campssg.dto.order.OrderResponseDto;
+import com.campssg.dto.order.*;
 import com.campssg.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,9 +26,10 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final MartRepository martRepository;
 
     // 주문 시 주문서 생성하고 주문 정보 반환
-    public OrderResponseDto getOrderInfo(OrderRequestDto orderRequestDto) {
+    public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
         Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseThrow();
         List<CartItem> cartItemList = cartItemRepository.findByCart_cartId(cart.getCartId()); // 장바구니에 있는 상품 목록 가져오기
@@ -40,6 +40,36 @@ public class OrderService {
         return new OrderResponseDto(order, orderItemLists);
     }
 
+    // 주문번호로 주문 상세 내역 조회
+    public OrderResponseDto getOrderInfo(Long orderId) {
+        Order order = orderRepository.findByOrderId(orderId);
+        List<OrderItem> orderItemList = orderItemRepository.findByOrder_orderId(orderId);
+        List<OrderItemList> orderItemLists = orderItemList.stream().map(orderItem -> new OrderItemList(orderItem)).collect(Collectors.toList());
+
+        return new OrderResponseDto(order, orderItemLists);
+    }
+
+    // 사용자 주문 내역 조회(목록 조회)
+    public List<UserOrderListResponseDto> getUserOrderList() {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
+        List<Order> orderList = orderRepository.findByUser_userId(user.getUserId());
+        return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
+    }
+
+    // 마트 id로 주문 현황 조회
+    public List<MartOrderListResponseDto> getMartOrderList(Long martId) {
+        List<Order> orderList = orderRepository.findByMart_martId(martId);
+        return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
+    }
+
+    // 마트를 하나만 갖고 있는 경우 마트 주문 현황 조뢰
+    public List<MartOrderListResponseDto> getMartOrderList() {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
+        List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
+        List<Order> orderList = orderRepository.findByMart_martId(martList.get(0).getMartId());
+        return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
+    }
+
     // 주문서 생성
     public Order addOrder(User user, Mart mart, Cart cart, OrderRequestDto orderRequestDto) {
         int charge = setCostCharge(cart.getTotalPrice())+setPeriodCharge(orderRequestDto.getReservedAt(), LocalDateTime.now());
@@ -48,7 +78,7 @@ public class OrderService {
                 .mart(mart)
                 .user(user)
                 .reservedAt(orderRequestDto.getReservedAt())
-                .orderState(OrderState.주문완료)
+                .orderState(OrderState.주문완료) // TODO: 주문 상태 변경
                 .charge(charge)
                 .totalPrice(cart.getTotalPrice()+charge)
                 .build());
@@ -65,6 +95,7 @@ public class OrderService {
                     .product(cartItem.getProduct())
                     .orderItemCount(cartItem.getCartItemCount())
                     .build());
+            // TODO: cartItem 삭제
             OrderItemList orderItemList = new OrderItemList(orderItem);
             orderItemLists.add(orderItemList);
         }
