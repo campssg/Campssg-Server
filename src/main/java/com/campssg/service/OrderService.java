@@ -36,7 +36,9 @@ public class OrderService {
         Mart mart = cartItemList.get(0).getProduct().getMart(); // cartItem에서 마트 정보 가져오기
         Order order = addOrder(user, mart, cart, orderRequestDto);
         List<OrderItemList> orderItemLists = addOrderItem(cartItemList, order); // cartItemList에 있는 상품 목록 orderItemList로 옮기기
-
+        cart.setTotalCount(0);
+        cart.setTotalPrice(0);
+        cartRepository.save(cart);
         return new OrderResponseDto(order, orderItemLists);
     }
 
@@ -78,7 +80,7 @@ public class OrderService {
                 .mart(mart)
                 .user(user)
                 .reservedAt(orderRequestDto.getReservedAt())
-                .orderState(OrderState.주문완료) // TODO: 주문 상태 변경
+                .orderState(OrderState.주문완료)
                 .charge(charge)
                 .totalPrice(cart.getTotalPrice()+charge)
                 .build());
@@ -95,7 +97,7 @@ public class OrderService {
                     .product(cartItem.getProduct())
                     .orderItemCount(cartItem.getCartItemCount())
                     .build());
-            // TODO: cartItem 삭제
+            cartItemRepository.delete(cartItem);
             OrderItemList orderItemList = new OrderItemList(orderItem);
             orderItemLists.add(orderItemList);
         }

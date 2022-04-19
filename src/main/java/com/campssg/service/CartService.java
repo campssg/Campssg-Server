@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +55,7 @@ public class CartService {
      // 장바구니에 상품 담기
      public void addCartItem(Long productId, AddCartItemRequestDto requestDto) {
          User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
-         Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElse(addCart()); // 사용자 아이디 값으로 장바구니 가져오기
+         Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseGet(this::addCart); // 사용자 아이디 값으로 장바구니 가져오기
          Product product = productRepository.findByProductId(productId); // 상품 아이디로 상품 정보 가져오기
          CartItem cartItem = cartItemRepository.findByCart_cartIdAndProduct_productId(cart.getCartId(), productId); // 장바구니 안에 이미 있는 상품인지 확인
 
