@@ -114,7 +114,7 @@ public class UserService {
     @Transactional
     public UserDto updateUserPassword(PasswordDto passwordDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElse(null);
-        if (passwordEncoder.matches(passwordDto.getNewPassword(), user.getUserPassword())) {
+        if (passwordEncoder.matches(passwordDto.getRecentPassword(), user.getUserPassword())) {
             user.setUserPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
         } else {
             logger.info("비밀번호가 일치하지 않습니다");
