@@ -23,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/sms")
 public class SmsController {
 
     private final SmsService smsService;
@@ -32,7 +32,7 @@ public class SmsController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "인증번호 전송 완료")
     })
-    @PostMapping("register/sms/send")
+    @PostMapping("/send")
     public ResponseEntity<SmsResponseDto> sendSms(@RequestBody SendSmsRequestDto sendSmsRequestDto) throws NoSuchAlgorithmException, URISyntaxException,
             UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
         SmsResponseDto smsResponseDto = smsService.sendSms(sendSmsRequestDto.getPhoneNumber());
@@ -43,7 +43,7 @@ public class SmsController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "인증번호 확인 결과 전송")
     })
-    @PostMapping("register/sms/verify")
+    @PostMapping("/verify")
     public ResponseEntity<ResponseMessage> veritySms(@RequestBody SmsCertificationRequestDto smsCertificationRequestDto) {
         ResponseMessage responseMessage = smsService.verifySms(smsCertificationRequestDto);
         return ResponseEntity.ok().body(responseMessage);

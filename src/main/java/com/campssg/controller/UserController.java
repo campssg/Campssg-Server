@@ -19,7 +19,7 @@ import javax.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
@@ -66,7 +66,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "사용자 정보 조회 완료")
     })
-    @GetMapping("/user/info")
+    @GetMapping("/info")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
     public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
         return ResponseEntity.ok(userService.getMyInfo());
@@ -76,7 +76,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "닉네임 추가 또는 수정 완료")
     })
-    @PatchMapping("/user/update/nickname")
+    @PatchMapping("/update/nickname")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
     public ResponseEntity<UserDto> updateUserNickname(HttpServletRequest request, @Valid @RequestBody NicknameDto nicknameDto) {
         return ResponseEntity.ok(userService.updateUserNickname(nicknameDto));
@@ -86,7 +86,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "비밀번호 변경 완료")
     })
-    @PatchMapping("/user/update/password")
+    @PatchMapping("/update/password")
     @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
     public ResponseEntity<UserDto> updateUserPassword(HttpServletRequest request, @Valid @RequestBody PasswordDto passwordDto) {
         return ResponseEntity.ok(userService.updateUserPassword(passwordDto));
@@ -96,7 +96,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "회원 탈퇴 완료")
     })
-    @PostMapping("/user/delete")
+    @PostMapping("/delete")
     public ResponseEntity<ResponseMessage> deleteUser(@RequestBody DeleteRequestDto deleteRequestDto) {
         userService.deleteUser(deleteRequestDto);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "탈퇴가 완료되었습니다"));
