@@ -61,12 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ,"/error"
                 ,"/swagger-resources/**"
                 ,"/v2/api-docs").permitAll()
-                .antMatchers("/api/v1/login").permitAll()
-                .antMatchers("/api/v1/register/**").permitAll()
-                // .antMatchers("api/v1/user/**").hasAnyRole("USER")
-                .antMatchers("/api/v1/manager/**").hasAnyRole("MANAGER")
-                .antMatchers("/api/v1/user/**").hasAnyRole("GUEST", "MANAGER")
-                .antMatchers("/cart/**").hasAnyRole("GUEST")
+                .antMatchers("/user/login").permitAll()
+                .antMatchers("/user/register/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
