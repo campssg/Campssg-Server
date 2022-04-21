@@ -23,31 +23,39 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 2, required = true, dataType = "String", value = "사업자등록번호 숫자로 이루어진 10자리 값만 가능 ('-' 등의 기호 반드시 제거 후 호출)")
     private String bNo;
 
+    @NotNull(message = "마트 경도")
+    @ApiModelProperty(position = 3, required = true, dataType = "Long", value = "마트 경도")
+    private Long longitude;
+
+    @NotNull(message = "마트 위도")
+    @ApiModelProperty(position = 4, required = true, dataType = "Long", value = "마트 위도")
+    private Long latitude;
+
     @NotNull(message = "개업일 YYYYMMDD 필수입니다")
-    @ApiModelProperty(position = 3, required = true, dataType = "String", value = "개업일 YYYYMMDD")
+    @ApiModelProperty(position = 5, required = true, dataType = "String", value = "개업일 YYYYMMDD")
     private String startDt;
 
-    @ApiModelProperty(position = 4, required = true, dataType = "Long", value = "사용자 식별번호")
+    @ApiModelProperty(position = 6, required = true, dataType = "Long", value = "사용자 식별번호")
     private Long userId;
 
     @NotNull(message = "마트 주소는 필수입니다.")
-    @ApiModelProperty(position = 5, required = true, dataType = "String", value = "마트 주소")
+    @ApiModelProperty(position = 7, required = true, dataType = "String", value = "마트 주소")
     private String martAddress;
 
     @NotNull(message = "마트 영업시작시간 필수입니다.")
-    @ApiModelProperty(position = 6, required = true, dataType = "String", value = "마트 영업시작시간")
+    @ApiModelProperty(position = 8, required = true, dataType = "String", value = "마트 영업시작시간")
     private String openTime;
 
     @NotNull(message = "마트 마감시간 필수입니다.")
-    @ApiModelProperty(position = 7, required = true, dataType = "String", value = "마트 마감시간")
+    @ApiModelProperty(position = 9, required = true, dataType = "String", value = "마트 마감시간")
     private String closeTime;
 
     @NotNull(message = "마트 번호 필수입니다.")
-    @ApiModelProperty(position = 8, required = true, dataType = "String", value = "마트 번호")
+    @ApiModelProperty(position = 10, required = true, dataType = "String", value = "마트 번호")
     private String number;
 
     @NotNull(message = "마트 물품 요청 필수입니다.")
-    @ApiModelProperty(position = 9, required = true, dataType = "Long", value = "마트 물품 요청 ")
+    @ApiModelProperty(position = 11, required = true, dataType = "Long", value = "마트 물품 요청 ")
     private Long requestYn;
 
     public Mart toEntity(User user) {
@@ -56,6 +64,8 @@ public class MartSaveRequestDto {
             .martAddress(martAddress)
             .openTime(openTime)
             .closeTime(closeTime)
+            .latitude(latitude)
+            .longitude(longitude)
             .requestYn(requestYn)
             .user(user)
             .build();
