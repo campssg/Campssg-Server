@@ -1,11 +1,9 @@
 package com.campssg.service;
 
 import com.campssg.DB.entity.*;
-import com.campssg.DB.repository.MartRepository;
 import com.campssg.DB.repository.OrderRepository;
 import com.campssg.DB.repository.RequestedProductRepository;
 import com.campssg.DB.repository.UserRepository;
-import com.campssg.common.S3Uploder;
 import com.campssg.dto.requestedProduct.AddRequestedProductDto;
 import com.campssg.dto.requestedProduct.GetRequestedProductDto;
 import com.campssg.dto.requestedProduct.GuestRequestDto;
@@ -13,7 +11,6 @@ import com.campssg.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,7 +54,6 @@ public class RequestedProductService {
         return requestedProductDtos;
     }
 
-
     // 서비스 이용자가 요청 상품 조회
     public List<GetRequestedProductDto> getRequestedProductFromGuest() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
@@ -89,4 +85,7 @@ public class RequestedProductService {
         requestedProduct.setRequestedProductState(RequestedProductState.가격요청중);
         requestedProductRepository.save(requestedProduct);
     }
+
+    // TODO: 마트 운영자 요청 상품 전체 목록 조회
+    // TODO: 서비스 이용자 요청 상품 전체 목록 조회
 }

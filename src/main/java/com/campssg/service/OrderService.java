@@ -27,6 +27,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final MartRepository martRepository;
+    private final RequestedProductRepository requestedProductRepository;
 
     // 주문 시 주문서 생성하고 주문 정보 반환
     public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) {
@@ -43,12 +44,17 @@ public class OrderService {
     }
 
     // 주문번호로 주문 상세 내역 조회
-    public OrderResponseDto getOrderInfo(Long orderId) {
+    public OrderDetailResponseDto getOrderInfo(Long orderId) {
         Order order = orderRepository.findByOrderId(orderId);
         List<OrderItem> orderItemList = orderItemRepository.findByOrder_orderId(orderId);
         List<OrderItemList> orderItemLists = orderItemList.stream().map(orderItem -> new OrderItemList(orderItem)).collect(Collectors.toList());
-
-        return new OrderResponseDto(order, orderItemLists);
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByOrder_orderId(orderId).orElse(null);
+        if (requestedProducts.isEmpty()) {
+            return new OrderDetailResponseDto(order, orderItemLists, null);
+        } else {
+            List<RequestedProductList> requestedProductLists = requestedProducts.stream().map(requestedProduct -> new RequestedProductList(requestedProduct)).collect(Collectors.toList());
+            return new OrderDetailResponseDto(order, orderItemLists, requestedProductLists);
+        }
     }
 
     // 사용자 주문 내역 조회(목록 조회)
@@ -71,6 +77,8 @@ public class OrderService {
         List<Order> orderList = orderRepository.findByMart_martId(martList.get(0).getMartId());
         return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
     }
+
+    // TODO: 픽업대기중인 주문 내역 조회
 
     // 주문서 생성
     public Order addOrder(User user, Mart mart, Cart cart, OrderRequestDto orderRequestDto) {

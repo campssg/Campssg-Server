@@ -1,14 +1,12 @@
 package com.campssg.controller;
 
-import com.campssg.dto.order.MartOrderListResponseDto;
-import com.campssg.dto.order.OrderRequestDto;
-import com.campssg.dto.order.OrderResponseDto;
-import com.campssg.dto.order.UserOrderListResponseDto;
+import com.campssg.dto.order.*;
 import com.campssg.service.OrderService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,8 +23,8 @@ public class OrderController {
             @ApiResponse(code = 200, message = "주문서 생성 성공")
     })
     @PostMapping("/add")
-    public OrderResponseDto addOrderInfo(@Valid @RequestBody OrderRequestDto orderRequestDto) {
-        return orderService.addOrderInfo(orderRequestDto);
+    public ResponseEntity<OrderResponseDto> addOrderInfo(@Valid @RequestBody OrderRequestDto orderRequestDto) {
+        return ResponseEntity.ok(orderService.addOrderInfo(orderRequestDto));
     }
 
     @ApiOperation(value = "주문 상세 내역 조회")
@@ -34,8 +32,8 @@ public class OrderController {
             @ApiResponse(code = 200, message = "주문 상세 내역 조회 성공")
     })
     @GetMapping("/{orderId}")
-    public OrderResponseDto getOrderInfo(@PathVariable Long orderId) {
-        return orderService.getOrderInfo(orderId);
+    public ResponseEntity<OrderDetailResponseDto> getOrderInfo(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getOrderInfo(orderId));
     }
 
     @ApiOperation(value = "사용자 주문 내역 조회")
@@ -43,8 +41,8 @@ public class OrderController {
             @ApiResponse(code = 200, message = "사용자 주문 내역 조회 성공")
     })
     @GetMapping("/user")
-    public List<UserOrderListResponseDto> getUserOrderList() {
-        return orderService.getUserOrderList();
+    public ResponseEntity<List<UserOrderListResponseDto>> getUserOrderList() {
+        return ResponseEntity.ok(orderService.getUserOrderList());
     }
 
     @ApiOperation(value = "마트가 하나인 마트 운영자 주문 현황 조회")
@@ -52,8 +50,8 @@ public class OrderController {
             @ApiResponse(code = 200, message = "마트가 하나인 마트 운영자 주문 현황 조회 성공")
     })
     @GetMapping("/mart")
-    public List<MartOrderListResponseDto> getMartOrderList() {
-        return orderService.getMartOrderList();
+    public ResponseEntity<List<MartOrderListResponseDto>> getMartOrderList() {
+        return ResponseEntity.ok(orderService.getMartOrderList());
     }
 
     @ApiOperation(value = "마트별 주문 현황 조회")
@@ -61,7 +59,7 @@ public class OrderController {
             @ApiResponse(code = 200, message = "마트별 주문 현황 조회 성공")
     })
     @GetMapping("/mart/{martId}")
-    public List<MartOrderListResponseDto> getMartOrderList(@PathVariable Long martId) {
-        return orderService.getMartOrderList(martId);
+    public ResponseEntity<List<MartOrderListResponseDto>> getMartOrderList(@PathVariable Long martId) {
+        return ResponseEntity.ok(orderService.getMartOrderList(martId));
     }
 }
