@@ -131,4 +131,13 @@ public class UserService {
             logger.info("비밀번호가 일치하지 않습니다");
         }
     }
+
+    @Transactional
+    public void updateUserImg(MultipartFile file) throws IOException {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+
+        String imgUrl = file == null ? null : s3Uploder.upload(file, "user");
+        user.updateImg(imgUrl);
+    }
 }
