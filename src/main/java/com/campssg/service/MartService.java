@@ -43,7 +43,7 @@ public class MartService {
                 .bNo(requestDto.getBNo())
                 //TODO: 로그인 한 사용자 이름 받아오기
                 .pNm(((User) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal()).getUserName())
+                        .getPrincipal()).getUserName())
                 .startDt(requestDto.getStartDt())
                 .build());
         if (isValidate) {
