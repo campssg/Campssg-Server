@@ -1,6 +1,5 @@
 package com.campssg.controller;
 
-import com.campssg.DB.entity.OrderState;
 import com.campssg.dto.ResponseMessage;
 import com.campssg.dto.order.MartOrderListResponseDto;
 import com.campssg.dto.order.OrderRequestDto;
@@ -8,10 +7,10 @@ import com.campssg.dto.order.OrderResponseDto;
 import com.campssg.dto.order.UserOrderListResponseDto;
 import com.campssg.service.OrderService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
-import javax.print.DocFlavor.STRING;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -80,8 +79,10 @@ public class OrderController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "주문 상태 변경 성공")
     })
+
     @PutMapping("/{orderId}/{status}")
-    public ResponseEntity<ResponseMessage> updateOrderStatus(@PathVariable Long orderId, @PathVariable String status) {
+    public ResponseEntity<ResponseMessage> updateOrderStatus(@ApiParam(value = "주문 아이디") @PathVariable Long orderId,
+        @ApiParam(value = "주문 상태(주문완료, 결제대기중, 가격흥정중, 결제완료, 픽업준비중, 픽업준비완료, 픽업완료)") @PathVariable String status) {
         orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "주문 상태 변경 완료"));
     }
