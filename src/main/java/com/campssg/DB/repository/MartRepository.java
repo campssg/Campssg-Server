@@ -17,5 +17,5 @@ public interface MartRepository extends JpaRepository<Mart, Long> {
         + "                        - RADIANS( :lon ) ) + SIN( RADIANS( :lat ) ) * SIN( RADIANS( latitude ) ) ) )\n"
         + "       AS distance\n"
         + "FROM mart having distance <= 3 order by distance", nativeQuery = true)
-    List<Mart> findAroundMart(@Param("lat") Long lat, @Param("lon") Long lon);
+    List<Mart> findAroundMart(@Param("lat") Double lat, @Param("lon") Double lon);
 }

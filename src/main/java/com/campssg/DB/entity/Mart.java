@@ -43,14 +43,14 @@ public class Mart extends Auditor {
     private Long requestYn;
 
     @Column(name = "latitude")
-    private Long latitude;
+    private Double latitude;
 
     @Column(name = "longitude")
-    private Long longitude;
+    private Double longitude;
 
     @Builder
     public Mart(Long martId, User user, String martName, String martAddress, Long requestYn, String openTime,
-        String closeTime, Long latitude, Long longitude) {
+        String closeTime, Double latitude, Double longitude) {
         this.martId = martId;
         this.user = user;
         this.martName = martName;

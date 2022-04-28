@@ -59,6 +59,12 @@ public class MartService {
         return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
     }
 
+    // 위치 기반 마트 검색
+    public List<MartListResponseDto> searchAroundMart(Double latitude, Double longitude) {
+        List<Mart> aroundMart = martRepository.findAroundMart(latitude, longitude);
+        return aroundMart.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
+    }
+
     public void saveProductToMart(ProductSaveRequest requestDto, MultipartFile file) throws IOException {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         String imgUrl = file == null ? null : s3Uploder.upload(file, "product");

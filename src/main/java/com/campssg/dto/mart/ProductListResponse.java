@@ -20,6 +20,7 @@ public class ProductListResponse {
 
     @Getter
     public class ProductList {
+        private Long productId;
 
         private String productName;
 
@@ -28,6 +29,7 @@ public class ProductListResponse {
         private int productStock;
 
         public ProductList(Product product) {
+            this.productId = product.getProductId();
             this.productName = product.getProductName();
             this.productPrice = product.getProductPrice();
             this.productStock = product.getProductStock();

@@ -25,11 +25,11 @@ public class MartSaveRequestDto {
 
     @NotNull(message = "마트 경도")
     @ApiModelProperty(position = 3, required = true, dataType = "Long", value = "마트 경도")
-    private Long longitude;
+    private Double longitude;
 
     @NotNull(message = "마트 위도")
     @ApiModelProperty(position = 4, required = true, dataType = "Long", value = "마트 위도")
-    private Long latitude;
+    private Double latitude;
 
     @NotNull(message = "개업일 YYYYMMDD 필수입니다")
     @ApiModelProperty(position = 5, required = true, dataType = "String", value = "개업일 YYYYMMDD")

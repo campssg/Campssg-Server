@@ -2,6 +2,7 @@ package com.campssg.controller;
 
 import com.campssg.dto.ResponseMessage;
 import com.campssg.dto.cart.AddCartItemRequestDto;
+import com.campssg.dto.mart.MartListResponseDto;
 import com.campssg.dto.mart.ProductListResponse;
 import com.campssg.service.CartService;
 import com.campssg.service.MartService;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/search/mart")
@@ -21,9 +24,14 @@ public class SearchMartController {
     private final CartService cartService;
     private final MartService martService;
 
-    @GetMapping("")
-    public void searchMartList() {
-        // TODO: 위치 정보 기반으로 마트 검색
+    @ApiOperation(value = "위치 기반으로 마트 조회")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "위치 기반 마트 조회 완료")
+    )
+    @GetMapping("/{latitude}/{longitude}")
+    public ResponseEntity<List<MartListResponseDto>> searchAroundMartList(
+            @PathVariable Double latitude, @PathVariable Double longitude) {
+        return ResponseEntity.ok(martService.searchAroundMart(latitude, longitude));
     }
 
     @ApiOperation(value = "마트에 있는 상품 목록 조회")
