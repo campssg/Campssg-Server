@@ -153,4 +153,9 @@ public class OrderService {
         }
         return charge;
     }
+
+    public void updateOrderStatus(Long orderId, String status) {
+        Order order = orderRepository.findByOrderId(orderId);
+        order.updateStatus(OrderState.valueOf(status));
+    }
 }
