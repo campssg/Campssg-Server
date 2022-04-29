@@ -36,9 +36,9 @@ public class CampingController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "캠핑장 조회 성공")
     })
-    @GetMapping("/place/{page}")
+    @GetMapping("/{mapY}/{mapX}/{page}")
     public ResponseEntity<CampingResponseDto<CampingList>> searchPlace(
-            @RequestBody @Valid CampingRequestDto requestDto, @PathVariable String page) throws IOException, ParseException {
+            @ModelAttribute @Valid CampingRequestDto requestDto, @PathVariable String page) throws IOException, ParseException {
         return ResponseEntity.ok(campingService.searchPlace(requestDto, page));
     }
 }
