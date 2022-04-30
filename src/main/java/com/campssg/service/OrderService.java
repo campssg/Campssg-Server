@@ -2,9 +2,24 @@ package com.campssg.service;
 
 import com.campssg.DB.entity.*;
 import com.campssg.DB.repository.*;
+import com.campssg.common.MultipartImage;
+import com.campssg.common.S3Uploder;
 import com.campssg.dto.order.*;
 import com.campssg.util.SecurityUtil;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageConfig;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -27,9 +43,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final MartRepository martRepository;
+    private final S3Uploder s3Uploder;
 
     // 주문 시 주문서 생성하고 주문 정보 반환
-    public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) {
+    public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) throws IOException, WriterException {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
         Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseThrow();
         List<CartItem> cartItemList = cartItemRepository.findByCart_cartId(cart.getCartId()); // 장바구니에 있는 상품 목록 가져오기
@@ -73,8 +90,10 @@ public class OrderService {
     }
 
     // 주문서 생성
-    public Order addOrder(User user, Mart mart, Cart cart, OrderRequestDto orderRequestDto) {
+    public Order addOrder(User user, Mart mart, Cart cart, OrderRequestDto orderRequestDto)
+        throws IOException, WriterException {
         int charge = setCostCharge(cart.getTotalPrice())+setPeriodCharge(orderRequestDto.getReservedAt(), LocalDateTime.now());
+
         Order order = orderRepository.save(Order.builder()
                 .orderId(setOrderNumber())
                 .mart(mart)
@@ -84,6 +103,8 @@ public class OrderService {
                 .charge(charge)
                 .totalPrice(cart.getTotalPrice()+charge)
                 .build());
+
+        createQrImg(order);
         return order;
     }
 
@@ -157,5 +178,32 @@ public class OrderService {
     public void updateOrderStatus(Long orderId, String status) {
         Order order = orderRepository.findByOrderId(orderId);
         order.updateStatus(OrderState.valueOf(status));
+    }
+
+    private void createQrImg(Order order) throws IOException, WriterException {
+        String url = "127.0.0.1:8080/order/" + order.getOrderId() + "/주문완료";
+        String codeurl = new String(url.getBytes("UTF-8"), "ISO-8859-1");
+
+        // QRCode 색상값
+        int qrcodeColor = 0xff080606;
+        // QRCode 배경색상값
+        int backgroundColor = 0xFFFFFFFF;
+
+        //QRCode 생성
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(codeurl, BarcodeFormat.QR_CODE,200, 200);    // 200,200은 width, height
+
+        MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrcodeColor,backgroundColor);
+        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix,matrixToImageConfig);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        ImageIO.write(bufferedImage, "png", baos);
+        baos.flush();
+
+        MultipartFile multipartFile = new MockMultipartFile("qrcode", "qrcode", "image/png", baos.toByteArray());
+        String qrcodeUrl = s3Uploder.upload(multipartFile, "qr");
+
+        order.updateQrcodeUrl(qrcodeUrl);
     }
 }

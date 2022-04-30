@@ -6,10 +6,12 @@ import com.campssg.dto.order.OrderRequestDto;
 import com.campssg.dto.order.OrderResponseDto;
 import com.campssg.dto.order.UserOrderListResponseDto;
 import com.campssg.service.OrderService;
+import com.google.zxing.WriterException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,8 @@ public class OrderController {
         @ApiResponse(code = 200, message = "주문서 생성 성공")
     })
     @PostMapping("/add")
-    public OrderResponseDto addOrderInfo(@Valid @RequestBody OrderRequestDto orderRequestDto) {
+    public OrderResponseDto addOrderInfo(@Valid @RequestBody OrderRequestDto orderRequestDto)
+        throws IOException, WriterException {
         return orderService.addOrderInfo(orderRequestDto);
     }
 

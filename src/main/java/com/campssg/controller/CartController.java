@@ -48,7 +48,7 @@ public class CartController {
         @ApiImplicitParam(name = "latitude", value = "현재 위치의 경도", required = true, paramType = "path")
     })
     @GetMapping("/{latitude}/{longitude}")
-    public ResponseEntity<ResponseMessage<CartComparisonListResponseDto>> getCartComparison(@PathVariable Long latitude, @PathVariable Long longitude) {
+    public ResponseEntity<ResponseMessage<CartComparisonListResponseDto>> getCartComparison(@PathVariable double latitude, @PathVariable double longitude) {
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", cartService.getCartComparison(latitude, longitude)), HttpStatus.OK);
     }
 }
