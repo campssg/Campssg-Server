@@ -91,7 +91,16 @@ public class MartService {
 
         List<ProductListResponse.ProductList> productLists = productListByMart.stream()
             .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
-        return new ProductListResponse(productLists);
+        return new ProductListResponse(productLists, null);
+    }
+
+    // 카테고리별로 마트 상품 조회
+    public ProductListResponse findProductByCategory(Long martId, Long categoryId) {
+        List<Product> products = productRepository.findByMart_martIdAndCategory_categoryId(martId, categoryId);
+        List<ProductListResponse.ProductList> productLists = products.stream()
+                .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
+        Category category = categoryRepository.findByCategoryId(categoryId);
+        return new ProductListResponse(productLists, category);
     }
 
     public void addProductStock(Long productId, int count) { // 기존에 있는 마트 상품 재고만 추가
