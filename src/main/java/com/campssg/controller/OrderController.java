@@ -45,15 +45,6 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getUserOrderList());
     }
 
-    @ApiOperation(value = "마트가 하나인 마트 운영자 주문 현황 조회")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "마트가 하나인 마트 운영자 주문 현황 조회 성공")
-    })
-    @GetMapping("/mart")
-    public ResponseEntity<List<MartOrderListResponseDto>> getMartOrderList() {
-        return ResponseEntity.ok(orderService.getMartOrderList());
-    }
-
     @ApiOperation(value = "마트별 주문 현황 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "마트별 주문 현황 조회 성공")
@@ -61,5 +52,14 @@ public class OrderController {
     @GetMapping("/mart/{martId}")
     public ResponseEntity<List<MartOrderListResponseDto>> getMartOrderList(@PathVariable Long martId) {
         return ResponseEntity.ok(orderService.getMartOrderList(martId));
+    }
+
+    @ApiOperation(value = "픽업준비완료된 주문 조회")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "픽업준비완료된 주문 조회 성공")
+    })
+    @GetMapping("/prepared")
+    public ResponseEntity<List<UserOrderListResponseDto>> getPreparedOrderList() {
+        return ResponseEntity.ok(orderService.getPreparedOrderList());
     }
 }

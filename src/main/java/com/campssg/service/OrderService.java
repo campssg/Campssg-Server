@@ -70,15 +70,12 @@ public class OrderService {
         return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
-    // 마트를 하나만 갖고 있는 경우 마트 주문 현황 조뢰
-    public List<MartOrderListResponseDto> getMartOrderList() {
+    // 픽업준비완료인 주문 내역 조회
+    public List<UserOrderListResponseDto> getPreparedOrderList() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
-        List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
-        List<Order> orderList = orderRepository.findByMart_martId(martList.get(0).getMartId());
-        return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
+        List<Order> orderList = orderRepository.findByUser_userIdAndOrderState(user.getUserId(), OrderState.픽업준비완료);
+        return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
-
-    // TODO: 픽업대기중인 주문 내역 조회
 
     // 주문서 생성
     public Order addOrder(User user, Mart mart, Cart cart, OrderRequestDto orderRequestDto) {
