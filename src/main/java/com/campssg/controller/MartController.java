@@ -1,10 +1,7 @@
 package com.campssg.controller;
 
 import com.campssg.dto.ResponseMessage;
-import com.campssg.dto.mart.MartListResponseDto;
-import com.campssg.dto.mart.MartSaveRequestDto;
-import com.campssg.dto.mart.ProductListResponse;
-import com.campssg.dto.mart.ProductSaveRequest;
+import com.campssg.dto.mart.*;
 import com.campssg.service.MartService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -68,6 +65,16 @@ public class MartController {
         requestDto.setMartId(martId);
         martService.saveProductToMart(requestDto, file);
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "해당 마트에 상품 등록", null), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "해당 마트에 상품 리스트 등록")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "상품 리스트 등록 성공")
+    })
+    @PostMapping("/{martId}/list")
+    public ResponseEntity<ResponseMessage> saveProductListToMart(@PathVariable Long martId, @Valid @RequestBody List<ProductListSaveRequest> checklistProducts) {
+        martService.saveProductListToMart(checklistProducts, martId);
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "물품 등록이 완료되었습니다"));
     }
 
     @ApiOperation(value = "마트 상품 조회 성공")

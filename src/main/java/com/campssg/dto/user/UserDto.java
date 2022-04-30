@@ -35,6 +35,7 @@ public class UserDto {
     private String phoneNumber;
 
     private Role userRole;
+    private String userImgUrl;
 
     public static UserDto from(User user) {
         if(user == null) return null;
@@ -45,6 +46,7 @@ public class UserDto {
                 .userNickname(user.getUserNickname())
                 .userRole(user.getUserRole())
                 .phoneNumber(user.getPhoneNumber())
+                .userImgUrl(user.getUserImg())
                 .build();
     }
 }

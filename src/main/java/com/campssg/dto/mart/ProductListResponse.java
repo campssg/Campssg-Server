@@ -28,11 +28,14 @@ public class ProductListResponse {
 
         private int productStock;
 
+        private String productImgUrl;
+
         public ProductList(Product product) {
             this.productId = product.getProductId();
             this.productName = product.getProductName();
             this.productPrice = product.getProductPrice();
             this.productStock = product.getProductStock();
+            this.productImgUrl = product.getProductImgUrl();
         }
     }
 }
