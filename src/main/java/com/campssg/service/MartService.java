@@ -40,11 +40,12 @@ public class MartService {
     }
 
     public boolean authMart(MartAuthRequestDto requestDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+
         return openApi.martValidationOpenApi(
             MartCertificationRequestDto.builder()
                 .bNo(requestDto.getBNo())
-                .pNm(((User) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal()).getUserName())
+                .pNm(user.getUserName())
                 .startDt(requestDto.getStartDt())
                 .build());
     }
