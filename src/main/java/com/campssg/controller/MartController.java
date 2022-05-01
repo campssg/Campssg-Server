@@ -42,9 +42,9 @@ public class MartController {
         @ApiResponse(code = 201, message = "마트 사업자 인증 완료")
     })
     @PostMapping("/auth")
-    public boolean authMart(
+    public ResponseEntity<ResponseMessage> authMart(
         @RequestBody @Validated MartAuthRequestDto requestDto) {
-        return martService.authMart(requestDto);
+        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 등록 성공",  martService.authMart(requestDto)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "마트 등록")

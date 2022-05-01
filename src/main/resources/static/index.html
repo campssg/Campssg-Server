@@ -113,7 +113,7 @@
 
       }).then(result => {
           // 위, 경도 결과 값
-          window.Android.processDATA(lat + ", " + lon + ", " + fullRoadAddr);
+          window.Android.processDATA(lat + "|" + lon + "|" + fullRoadAddr);
 
       });
       },
