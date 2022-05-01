@@ -28,12 +28,14 @@ public class CartInfoResponseDto<CartItemList> {
         private String cartItemName;
         private int cartItemPrice;
         private int cartItemCount;
+        private String cartItemImgUrl;
 
         public CartItemList(CartItem cartItem) {
             this.cartItemId = cartItem.getCartItemId();
             this.cartItemName = cartItem.getProduct().getProductName();
             this.cartItemPrice = cartItem.getProduct().getProductPrice();
             this.cartItemCount = cartItem.getCartItemCount();
+            this.cartItemImgUrl = cartItem.getProduct().getProductImgUrl();
         }
     }
 }

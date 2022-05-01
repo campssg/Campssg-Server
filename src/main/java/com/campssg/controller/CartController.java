@@ -34,9 +34,9 @@ public class CartController {
             @ApiResponse(code = 200, message = "장바구니 물품 삭제 성공")
     })
     @PostMapping("/delete/{cartItemId}")
-    public ResponseEntity<ResponseMessage> deleteCartItem(@PathVariable Long cartItemId) {
+    public ResponseEntity<ResponseMessage<CartInfoResponseDto>> deleteCartItem(@PathVariable Long cartItemId) {
         cartService.deleteCartItem(cartItemId);
-        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "삭제가 완료되었습니다"));
+        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", cartService.getCartInfo()), HttpStatus.OK);
     }
 
     @ApiOperation(value = "현재 위치 기반 마트 주변에 장바구니 재고 및 가격비교")
