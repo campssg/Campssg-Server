@@ -35,19 +35,18 @@ public class MartService {
 
     public void saveMart(MartSaveRequestDto requestDto) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
-        boolean isValidate = openApi.martValidationOpenApi(
+
+        martRepository.save(requestDto.toEntity(user));
+    }
+
+    public boolean authMart(MartAuthRequestDto requestDto) {
+        return openApi.martValidationOpenApi(
             MartCertificationRequestDto.builder()
                 .bNo(requestDto.getBNo())
-                //TODO: 로그인 한 사용자 이름 받아오기
                 .pNm(((User) SecurityContextHolder.getContext().getAuthentication()
-                        .getPrincipal()).getUserName())
+                    .getPrincipal()).getUserName())
                 .startDt(requestDto.getStartDt())
                 .build());
-        if (isValidate) {
-            martRepository.save(requestDto.toEntity(user));
-        } else {
-            throw new IllegalArgumentException("마트 인증에 실패하였습니다.");
-        }
     }
 
     public List<MartListResponseDto> findByUserId() {
