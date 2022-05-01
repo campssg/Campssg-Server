@@ -8,6 +8,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -51,19 +54,25 @@ public class OpenApi {
             conn.connect();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-            ;
+
             StringBuffer sb = new StringBuffer();
             String responseData = "";
-
+            String test = "";
             while ((responseData = br.readLine()) != null) {
                 sb.append(responseData); //StringBuffer에 응답받은 데이터 순차적으로 저장 실시
             }
             //메소드 호출 완료 시 반환하는 변수에 버퍼 데이터 삽입 실시
             String returnData = sb.toString();
 
+            Object objData = JSONValue.parse(returnData);
+            JSONObject JSONObjData = (JSONObject)objData;
+            JSONArray JSONArrayData = (JSONArray)JSONObjData.get("data");
+            JSONObject data = (JSONObject)JSONArrayData.get(0);
+
             //http 요청 응답 코드 확인 실시
             String responseCode = String.valueOf(conn.getResponseCode());
-            if (responseCode.equals("200")) {
+            // 인증 된 사업자는 valid_msg가 내려오지 않음
+            if (responseCode.equals("200") && data.get("valid_msg") == null) {
                 isValidate = true;
             }
             System.out.println("http 응답 코드 : " + responseCode);

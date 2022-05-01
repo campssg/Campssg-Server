@@ -44,7 +44,7 @@ public class MartController {
     @PostMapping("/auth")
     public ResponseEntity<ResponseMessage> authMart(
         @RequestBody @Validated MartAuthRequestDto requestDto) {
-        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 등록 성공",  martService.authMart(requestDto)), HttpStatus.OK);
+        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 사업자 인증 성공",  martService.authMart(requestDto)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "마트 등록")
