@@ -83,7 +83,7 @@ public class CartService {
          }
      }
 
-    public CartComparisonListResponseDto getCartComparison(double latitude, double longitude) {
+    public CartComparisonListResponseDto getCartComparison(Double latitude, Double longitude) {
         List<CartComparisonListResponseDto.CartComparison> responseDto = new ArrayList<>();
         // 현재 주변 마트 리스트
         List<Mart> aroundMart = martRepository.findAroundMart(latitude, longitude);

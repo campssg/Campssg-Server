@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface MartRepository extends JpaRepository<Mart, Long> {
 
     List<Mart> findByUser_userId(Long userId);
+    Mart findByMartId(Long martId);
 
     @Query(value = "SELECT * ,\n"
         + "       ( 6371 * ACOS( COS( RADIANS( :lat ) )\n"
@@ -17,5 +18,5 @@ public interface MartRepository extends JpaRepository<Mart, Long> {
         + "                        - RADIANS( :lon ) ) + SIN( RADIANS( :lat ) ) * SIN( RADIANS( latitude ) ) ) )\n"
         + "       AS distance\n"
         + "FROM mart having distance <= 3 order by distance", nativeQuery = true)
-    List<Mart> findAroundMart(@Param("lat") double lat, @Param("lon") double lon);
+    List<Mart> findAroundMart(@Param("lat") Double lat, @Param("lon") Double lon);
 }

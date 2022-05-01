@@ -38,7 +38,7 @@ public class CampingController {
     })
     @GetMapping("/place/{page}")
     public ResponseEntity<CampingResponseDto<CampingList>> searchPlace(
-            @RequestBody @Valid CampingRequestDto requestDto, @PathVariable String page) throws IOException, ParseException {
+            @ModelAttribute @Valid CampingRequestDto requestDto, @PathVariable String page) throws IOException, ParseException {
         return ResponseEntity.ok(campingService.searchPlace(requestDto, page));
     }
 }

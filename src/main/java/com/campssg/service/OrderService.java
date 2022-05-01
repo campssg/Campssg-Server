@@ -1,11 +1,6 @@
 package com.campssg.service;
 
-import com.campssg.DB.entity.*;
-import com.campssg.DB.repository.*;
-import com.campssg.common.MultipartImage;
 import com.campssg.common.S3Uploder;
-import com.campssg.dto.order.*;
-import com.campssg.util.SecurityUtil;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageConfig;
@@ -14,10 +9,12 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import javax.imageio.ImageIO;
+import com.campssg.DB.entity.*;
+import com.campssg.DB.repository.*;
+import com.campssg.dto.order.*;
+import com.campssg.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -44,6 +41,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final MartRepository martRepository;
     private final S3Uploder s3Uploder;
+    private final RequestedProductRepository requestedProductRepository;
 
     // 주문 시 주문서 생성하고 주문 정보 반환
     public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) throws IOException, WriterException {
@@ -60,12 +58,17 @@ public class OrderService {
     }
 
     // 주문번호로 주문 상세 내역 조회
-    public OrderResponseDto getOrderInfo(Long orderId) {
+    public OrderDetailResponseDto getOrderInfo(Long orderId) {
         Order order = orderRepository.findByOrderId(orderId);
         List<OrderItem> orderItemList = orderItemRepository.findByOrder_orderId(orderId);
         List<OrderItemList> orderItemLists = orderItemList.stream().map(orderItem -> new OrderItemList(orderItem)).collect(Collectors.toList());
-
-        return new OrderResponseDto(order, orderItemLists);
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByOrder_orderId(orderId).orElse(null);
+        if (requestedProducts.isEmpty()) {
+            return new OrderDetailResponseDto(order, orderItemLists, null);
+        } else {
+            List<RequestedProductList> requestedProductLists = requestedProducts.stream().map(requestedProduct -> new RequestedProductList(requestedProduct)).collect(Collectors.toList());
+            return new OrderDetailResponseDto(order, orderItemLists, requestedProductLists);
+        }
     }
 
     // 사용자 주문 내역 조회(목록 조회)
@@ -81,12 +84,11 @@ public class OrderService {
         return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
-    // 마트를 하나만 갖고 있는 경우 마트 주문 현황 조뢰
-    public List<MartOrderListResponseDto> getMartOrderList() {
+    // 픽업준비완료인 주문 내역 조회
+    public List<UserOrderListResponseDto> getPreparedOrderList() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
-        List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
-        List<Order> orderList = orderRepository.findByMart_martId(martList.get(0).getMartId());
-        return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
+        List<Order> orderList = orderRepository.findByUser_userIdAndOrderState(user.getUserId(), OrderState.픽업준비완료);
+        return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
     // 주문서 생성
@@ -180,7 +182,7 @@ public class OrderService {
         order.updateStatus(OrderState.valueOf(status));
     }
 
-    private void createQrImg(Order order) throws IOException, WriterException {
+    private void createQrImg(Order order) throws IOException, WriterException, WriterException {
         String url = "127.0.0.1:8080/order/" + order.getOrderId() + "/주문완료";
         String codeurl = new String(url.getBytes("UTF-8"), "ISO-8859-1");
 
