@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface MartRepository extends JpaRepository<Mart, Long> {
 
     List<Mart> findByUser_userId(Long userId);
+    Mart findByMartId(Long martId);
 
     @Query(value = "SELECT * ,\n"
         + "       ( 6371 * ACOS( COS( RADIANS( :lat ) )\n"

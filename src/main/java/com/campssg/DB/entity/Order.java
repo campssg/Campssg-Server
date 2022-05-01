@@ -40,4 +40,12 @@ public class Order extends Auditor {
 
     @Column(name = "qrcode_url")
     private String qrcodeUrl;
+
+    public void updateStatus(OrderState status) {
+        this.orderState = status;
+    }
+
+    public void updateQrcodeUrl(String qrcodeUrl) {
+        this.qrcodeUrl = qrcodeUrl;
+    }
 }

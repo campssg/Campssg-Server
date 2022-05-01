@@ -13,4 +13,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT * FROM product where product_id = :productId and mart_id = :martId and product_stock = '0'", nativeQuery = true)
     List<Product> findByProductIdAndMart_martIdAndProductStockIs0(Long productId, Long martId);
+    List<Product> findByMart_martIdAndCategory_categoryId(Long martId, Long categoryId);
 }

@@ -1,5 +1,6 @@
 package com.campssg.dto.mart;
 
+import com.campssg.DB.entity.Category;
 import com.campssg.DB.entity.Product;
 import java.util.List;
 import lombok.Getter;
@@ -14,7 +15,12 @@ public class ProductListResponse {
 
     private List<ProductList> productList;
 
-    public ProductListResponse(List<ProductList> productLists) {
+    public ProductListResponse(List<ProductList> productLists, Category category) {
+        if (category != null) {
+            this.categoryName = category.getCategoryName();
+        } else {
+            this.categoryName = "모두";
+        }
         this.productList = productLists;
     }
 
@@ -28,11 +34,14 @@ public class ProductListResponse {
 
         private int productStock;
 
+        private String productImgUrl;
+
         public ProductList(Product product) {
             this.productId = product.getProductId();
             this.productName = product.getProductName();
             this.productPrice = product.getProductPrice();
             this.productStock = product.getProductStock();
+            this.productImgUrl = product.getProductImgUrl();
         }
     }
 }

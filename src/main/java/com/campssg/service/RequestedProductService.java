@@ -47,21 +47,30 @@ public class RequestedProductService {
         return new GuestRequestDto(requestedProduct);
     }
 
-    // 마트 운영자가 요청상품 조회
+    // 마트 운영자가 가격 요청 중인 요청상품 조회
     public List<GetRequestedProductDto> getRequestedProductFromMart(Long martId) {
         List<RequestedProduct> requestedProducts = requestedProductRepository.findByMart_martIdAndRequestedProductState(martId, RequestedProductState.가격요청중);
-        List<GetRequestedProductDto> requestedProductDtos = requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
-        return requestedProductDtos;
+        return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
     }
 
-    // 서비스 이용자가 요청 상품 조회
+    // 서비스 이용자가 가격 제시 중인 요청 상품 조회
     public List<GetRequestedProductDto> getRequestedProductFromGuest() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
-        System.out.println(user.getUserId());
-        Long userId = user.getUserId();
-        List<RequestedProduct> requestedProducts = requestedProductRepository.findByUser_userIdAndRequestedProductState(userId, RequestedProductState.가격제시중);
-        List<GetRequestedProductDto> requestedProductDtos = requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
-        return requestedProductDtos;
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByUser_userIdAndRequestedProductState(user.getUserId(), RequestedProductState.가격제시중);
+        return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
+    }
+
+    // 마트 운영자가 모든 요청상품 조회
+    public List<GetRequestedProductDto> getTotalRequestedProductFromMart(Long martId) {
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByMart_martId(martId);
+        return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
+    }
+
+    //서비스 이용자가 모든 요청상품 조회
+    public List<GetRequestedProductDto> getTotalRequestedProductFromGuest() {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByUser_userId(user.getUserId());
+        return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
     }
 
     // 승인 버튼을 눌러서 가격 흥정 마무리
@@ -85,7 +94,4 @@ public class RequestedProductService {
         requestedProduct.setRequestedProductState(RequestedProductState.가격요청중);
         requestedProductRepository.save(requestedProduct);
     }
-
-    // TODO: 마트 운영자 요청 상품 전체 목록 조회
-    // TODO: 서비스 이용자 요청 상품 전체 목록 조회
 }

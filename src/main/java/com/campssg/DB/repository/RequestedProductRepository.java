@@ -12,4 +12,6 @@ public interface RequestedProductRepository extends JpaRepository<RequestedProdu
     List<RequestedProduct> findByMart_martIdAndRequestedProductState(Long martId, RequestedProductState requestedProductState);
     List<RequestedProduct> findByUser_userIdAndRequestedProductState(Long userId, RequestedProductState requestedProductState);
     RequestedProduct findByRequestedProductId(Long requestedProductId);
+    List<RequestedProduct> findByUser_userId(Long userId);
+    List<RequestedProduct> findByMart_martId(Long martId);
 }

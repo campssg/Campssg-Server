@@ -44,6 +44,15 @@ public class SearchMartController {
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "success", martService.findProductByMartId(martId)), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "마트에 있는 상품 카테고리 별로 조회")
+    @ApiResponses(
+            @ApiResponse(code = 200, message = "카테고리별 상품 목록 조회 완료")
+    )
+    @GetMapping("/category/{categoryId}/{martId}")
+    public ResponseEntity<ProductListResponse> searchCategoryItem(@PathVariable Long categoryId, @PathVariable Long martId) {
+        return ResponseEntity.ok(martService.findProductByCategory(martId, categoryId));
+    }
+
     @ApiOperation(value = "마트 상품 장바구니에 추가")
     @ApiResponses(
             @ApiResponse(code = 200, message = "마트 상품 장바구니에 추가 완료")

@@ -92,6 +92,18 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserPassword(passwordDto));
     }
 
+    @ApiOperation(value = "회원 이미지 변경")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "회원 이미지 변경 완료")
+    })
+    @PatchMapping("/update/img")
+    @PreAuthorize("hasAnyRole('GUEST', 'MANAGER')")
+    public ResponseEntity<ResponseMessage> updateUserPassword(@ModelAttribute MultipartFile file)
+        throws IOException {
+        userService.updateUserImg(file);
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "이미지 변경이 완료되었습니다"));
+    }
+
     @ApiOperation(value = "회원 탈퇴")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "회원 탈퇴 완료")
