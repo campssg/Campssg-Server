@@ -30,9 +30,14 @@ public class Cart extends Auditor {
     public void addTotalCount(int count) {
         this.totalCount += count;
     }
+    public void subTotalCount(int count) {
+        this.totalCount -= count;
+    }
 
     public void addTotalPrice(int count, int price) {
-        int productPrice = price;
-        this.totalPrice += count * productPrice;
+        this.totalPrice += count * price;
+    }
+    public void subTotalPrice(int count, int price) {
+        this.totalPrice -= count * price;
     }
 }

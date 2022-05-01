@@ -79,6 +79,9 @@ public class CartService {
      public void deleteCartItem(Long cartItemId) {
          CartItem cartItem = cartItemRepository.findByCartItemId(cartItemId);
          if (cartItem != null) { // 장바구니에 상품이 있을 경우 삭제
+             Cart cart = cartItem.getCart();
+             cart.subTotalCount(cartItem.getCartItemCount());
+             cart.subTotalPrice(cartItem.getCartItemCount(), cartItem.getProduct().getProductPrice());
              cartItemRepository.delete(cartItem);
          }
      }
