@@ -42,12 +42,8 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 7, required = true, dataType = "String", value = "마트 마감시간")
     private String closeTime;
 
-    @NotNull(message = "마트 번호 필수입니다.")
-    @ApiModelProperty(position = 8, required = true, dataType = "String", value = "마트 번호")
-    private String number;
-
     @NotNull(message = "마트 물품 요청 필수입니다.")
-    @ApiModelProperty(position = 9, required = true, dataType = "Long", value = "마트 물품 요청 ")
+    @ApiModelProperty(position = 8, required = true, dataType = "Long", value = "마트 물품 요청 ")
     private Long requestYn;
 
     public Mart toEntity(User user) {
