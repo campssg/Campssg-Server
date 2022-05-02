@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -12,10 +13,11 @@ import java.util.List;
 public class OrderDetailResponseDto {
     private Long orderId;
     private String martName;
-    private LocalDateTime reservedAt;
     private String userName;
     private String order_phoneNumber;
     private String orderState;
+    private String pickup_day;
+    private String pickup_time;
     private int cartItemPrice;
     private int charge;
     private int totalPrice;
@@ -25,8 +27,9 @@ public class OrderDetailResponseDto {
     public OrderDetailResponseDto(Order order, List<OrderItemList> orderItemList, List<RequestedProductList> requestedProductList) {
         this.orderId = order.getOrderId();
         this.martName = order.getMart().getMartName();
-        this.reservedAt = order.getReservedAt();
         this.userName = order.getUser().getUserName();
+        this.pickup_day = order.getReservedAt().format(DateTimeFormatter.ofPattern("MM/dd"));
+        this.pickup_time = order.getReservedAt().format(DateTimeFormatter.ofPattern("hh:mm"));
         this.order_phoneNumber = order.getUser().getPhoneNumber();
         this.orderState = order.getOrderState().toString();
         this.cartItemPrice = order.getTotalPrice() - order.getCharge();
