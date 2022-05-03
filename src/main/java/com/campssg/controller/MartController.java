@@ -66,7 +66,7 @@ public class MartController {
     })
     @GetMapping("/info")
     public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList(
-        @RequestPart(value = "martName", required = false) String martName) {
+        @RequestParam(value = "martName", required = false) String martName) {
         List<MartListResponseDto> response = martService.findByUserId(martName);
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 조회 성공", response), HttpStatus.OK);
     }
