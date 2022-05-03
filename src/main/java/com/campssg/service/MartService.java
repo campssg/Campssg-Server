@@ -62,7 +62,7 @@ public class MartService {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         List<Mart> martList;
         if (martName != null) {
-            martList = martRepository.findByUser_userIdAndmAndMartNameContaining(user.getUserId(), martName);
+            martList = martRepository.findByUser_userIdAndMartNameContaining(user.getUserId(), martName);
         } else {
             martList = martRepository.findByUser_userId(user.getUserId());
         }
