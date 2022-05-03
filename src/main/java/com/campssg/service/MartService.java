@@ -1,19 +1,27 @@
 package com.campssg.service;
 
-import com.campssg.DB.entity.*;
+import com.campssg.DB.entity.Category;
+import com.campssg.DB.entity.Mart;
+import com.campssg.DB.entity.Product;
+import com.campssg.DB.entity.User;
 import com.campssg.DB.repository.CategoryRepository;
 import com.campssg.DB.repository.MartRepository;
 import com.campssg.DB.repository.ProductRepository;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.common.OpenApi;
 import com.campssg.common.S3Uploder;
-import com.campssg.dto.mart.*;
+import com.campssg.dto.mart.MartAuthRequestDto;
+import com.campssg.dto.mart.MartCertificationRequestDto;
+import com.campssg.dto.mart.MartListResponseDto;
+import com.campssg.dto.mart.MartSaveRequestDto;
+import com.campssg.dto.mart.ProductListResponse;
+import com.campssg.dto.mart.ProductListSaveRequest;
+import com.campssg.dto.mart.ProductSaveRequest;
 import com.campssg.util.SecurityUtil;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,9 +58,14 @@ public class MartService {
                 .build());
     }
 
-    public List<MartListResponseDto> findByUserId() {
+    public List<MartListResponseDto> findByUserId(String martName) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
-        List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
+        List<Mart> martList;
+        if (martName != null) {
+            martList = martRepository.findByUser_userIdAndmAndMartNameContaining(user.getUserId(), martName);
+        } else {
+            martList = martRepository.findByUser_userId(user.getUserId());
+        }
         return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
     }
 
@@ -73,21 +86,39 @@ public class MartService {
     public void saveProductListToMart(List<ProductListSaveRequest> checklistProducts, Long martId) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         Mart mart = martRepository.findByMartId(martId);
-        for (int i=0; i<checklistProducts.size(); i++) {
-            ProductListSaveRequest productListSaveRequest  = checklistProducts.get(i);
+        for (int i = 0; i < checklistProducts.size(); i++) {
+            ProductListSaveRequest productListSaveRequest = checklistProducts.get(i);
             Category category = categoryRepository.findByCategoryId(productListSaveRequest.getCategoryId());
             if (productListSaveRequest.getProductStock() == 0) {
                 productRepository.save(new Product(category, mart, productListSaveRequest.getProductName(),
-                        productListSaveRequest.getProductPrice(), 0, productListSaveRequest.getProductImgUrl()));
+                    productListSaveRequest.getProductPrice(), 0, productListSaveRequest.getProductImgUrl()));
             } else {
                 productRepository.save(new Product(category, mart, productListSaveRequest.getProductName(),
-                        productListSaveRequest.getProductPrice(), productListSaveRequest.getProductStock(), productListSaveRequest.getProductImgUrl()));
+                    productListSaveRequest.getProductPrice(), productListSaveRequest.getProductStock(),
+                    productListSaveRequest.getProductImgUrl()));
             }
         }
     }
 
     public ProductListResponse findProductByMartId(Long martId) {
-        List<Product> productListByMart = productRepository.findByMart_martId(martId);
+        List<Product> findProductByMartId = productRepository
+            .findByMart_martId(martId);
+
+        List<ProductListResponse.ProductList> productLists = findProductByMartId.stream()
+            .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
+        return new ProductListResponse(productLists, null);
+    }
+
+    public ProductListResponse findProductByMartIdAndKeyword(Long martId, String productName) {
+        List<Product> productListByMart;
+
+        if (productName == null) {
+            productListByMart = productRepository
+                .findByMart_martId(martId);
+        } else {
+            productListByMart = productRepository
+                .findByMart_martIdAndProductNameContains(martId, productName);
+        }
 
         List<ProductListResponse.ProductList> productLists = productListByMart.stream()
             .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
@@ -98,7 +129,7 @@ public class MartService {
     public ProductListResponse findProductByCategory(Long martId, Long categoryId) {
         List<Product> products = productRepository.findByMart_martIdAndCategory_categoryId(martId, categoryId);
         List<ProductListResponse.ProductList> productLists = products.stream()
-                .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
+            .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
         Category category = categoryRepository.findByCategoryId(categoryId);
         return new ProductListResponse(productLists, category);
     }
