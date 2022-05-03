@@ -120,23 +120,28 @@ public class CartService {
     }
 
     public CartComparisonListResponseDto getCartComparison(Double latitude, Double longitude) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseThrow();
         List<CartComparisonListResponseDto.CartComparison> responseDto = new ArrayList<>();
         // 현재 주변 마트 리스트
         List<Mart> aroundMart = martRepository.findAroundMart(latitude, longitude);
-        // 마트 id 상품 id 재고가 마트에 있는지 확인
-        List<CartItemList> cartList = getCartInfo().getCartItemList();
-        for (Mart mart : aroundMart) {
-            int totalPrice = getCartInfo().getTotalPrice();
+        // 장바구니 상품 목록 불러오기
+        List<CartItem> cartList = cartItemRepository.findByCart_cartId(cart.getCartId());
+        for (Mart mart : aroundMart) { // 주변 마트 검색
+            int totalPrice = 0;
             int notExistCnt = 0;
-            for (CartItemList cart : cartList) {
-                // 재고가 없는 물품
-                List<Product> notExistsProduct = productRepository.findByProductIdAndMart_martIdAndProductStockIs0(cart.getCartItemId(), mart.getMartId());
-                for (Product product : notExistsProduct) {
-                    totalPrice -= product.getProductPrice() * cart.getCartItemCount();
+            int notExistTotalCnt = 0;
+            for (CartItem cartItem : cartList) {
+                // 장바구니 상품 이름으로 마트에 해당 상품이 존재하는지 찾기
+                Product ExistsProduct = productRepository.findByProductNameAndMart_martId(cartItem.getProduct().getProductName(), mart.getMartId());
+                if (ExistsProduct != null) { // 존재할 경우 해당 마트에서 판매하는 가격 추가
+                    totalPrice += ExistsProduct.getProductPrice() * cartItem.getCartItemCount();
+                } else { // 존재하지 않을 경우 존재하지 않는 상품 개수 추가
+                    notExistCnt += 1; // 존재하지 않는 상품 종류 개수
+                    notExistTotalCnt += cartItem.getCartItemCount(); // 존재하지 않는 상품 전체 개수
                 }
-                notExistCnt = notExistsProduct.size();
             }
-            responseDto.add(new CartComparison(mart, notExistCnt, totalPrice));
+            responseDto.add(new CartComparison(mart, notExistCnt, notExistTotalCnt, totalPrice));
         }
         return new CartComparisonListResponseDto(responseDto);
     }
