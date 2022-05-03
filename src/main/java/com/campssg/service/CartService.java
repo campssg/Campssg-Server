@@ -6,6 +6,7 @@ import com.campssg.DB.repository.CartRepository;
 import com.campssg.DB.repository.MartRepository;
 import com.campssg.DB.repository.ProductRepository;
 import com.campssg.DB.repository.UserRepository;
+import com.campssg.dto.cart.CanAddDto;
 import com.campssg.dto.cart.CartComparisonListResponseDto;
 import com.campssg.dto.cart.CartComparisonListResponseDto.CartComparison;
 import com.campssg.dto.cart.CartInfoResponseDto;
@@ -53,12 +54,11 @@ public class CartService {
      }
 
      // 장바구니에 상품 담기
-     public void addCartItem(Long productId, AddCartItemRequestDto requestDto) {
+     public void addCartItem(Long martId, Long productId, AddCartItemRequestDto requestDto) {
          User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
          Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseGet(this::addCart); // 사용자 아이디 값으로 장바구니 가져오기
          Product product = productRepository.findByProductId(productId); // 상품 아이디로 상품 정보 가져오기
          CartItem cartItem = cartItemRepository.findByCart_cartIdAndProduct_productId(cart.getCartId(), productId); // 장바구니 안에 이미 있는 상품인지 확인
-
          if (cartItem == null) { // 장바구니 안에 없는 상품일 경우 새로 추가
              cartItem = CartItem.builder()
                      .cart(cart)
@@ -70,10 +70,20 @@ public class CartService {
              cartItem.addCount(requestDto.getCount());
              cartItemRepository.save(cartItem);
          }
-
          cart.addTotalCount(requestDto.getCount()); // 장바구니 상품 총 개수 증가
          cart.addTotalPrice(requestDto.getCount(), cartItem.getProduct().getProductPrice()); // 장바구니 상품 총 가격 증가
      }
+
+     // 장바구니에 있는 상품과 새로 추가하려는 상품이 다를 경우 - 기존 장바구니 삭제 후 새로 생성하고 담기
+    public void addNewCartItem(Long productId, AddCartItemRequestDto requestDto) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
+        Cart cart = deleteCart(user.getUserId());
+        Product product = productRepository.findByProductId(productId);
+        CartItem cartItem = CartItem.builder().cart(cart).product(product).cartItemCount(requestDto.getCount()).build();
+        cartItemRepository.save(cartItem);
+        cart.addTotalCount(requestDto.getCount());
+        cart.addTotalPrice(requestDto.getCount(), cartItem.getProduct().getProductPrice());
+    }
 
      // 장바구니에 있는 상품 삭제
      public void deleteCartItem(Long cartItemId) {
@@ -85,6 +95,29 @@ public class CartService {
              cartItemRepository.delete(cartItem);
          }
      }
+
+     // 장바구니 아예 삭제하고 다시 생성
+    public Cart deleteCart(Long userId) {
+        Cart cart = cartRepository.findByUser_userId(userId).orElseThrow();
+        cartRepository.delete(cart);
+        return addCart();
+    }
+
+    // 장바구니 아이템과 새로 추가하려는 아이템이 같은 마트 상품인지 확인
+    public CanAddDto canAdd(Long martId) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseThrow();
+        List<CartItem> existItem = cartItemRepository.findByCart_cartId(cart.getCartId());
+        if (existItem.isEmpty()) {
+            return new CanAddDto(1L);
+        } else {
+            if (existItem.get(0).getProduct().getMart().getMartId() == martId) {
+                return new CanAddDto(1L);
+            } else {
+                return new CanAddDto(0L);
+            }
+        }
+    }
 
     public CartComparisonListResponseDto getCartComparison(Double latitude, Double longitude) {
         List<CartComparisonListResponseDto.CartComparison> responseDto = new ArrayList<>();

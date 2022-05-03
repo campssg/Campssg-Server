@@ -115,9 +115,11 @@ public class OrderService {
         List<OrderItemList> orderItemLists = new ArrayList<>();
         for (int i=0; i<cartItemList.size(); i++) {
             CartItem cartItem = cartItemList.get(i);
+            Product product = cartItem.getProduct();
+            product.subProductStock(cartItem);
             OrderItem orderItem = orderItemRepository.save(OrderItem.builder()
                     .order(order)
-                    .product(cartItem.getProduct())
+                    .product(product)
                     .orderItemCount(cartItem.getCartItemCount())
                     .build());
             cartItemRepository.delete(cartItem);
@@ -125,6 +127,11 @@ public class OrderService {
             orderItemLists.add(orderItemList);
         }
         return orderItemLists;
+    }
+
+    // 주문 시 마트 재고 줄이기
+    public void subMartProduct(CartItem cartItem) {
+
     }
 
     // 주문번호 생성

@@ -34,7 +34,7 @@ public class UserDto {
     @Size(min = 5, max = 50)
     private String phoneNumber;
 
-    private Role userRole;
+    private String userRole;
     private String userImgUrl;
 
     public static UserDto from(User user) {
@@ -44,7 +44,7 @@ public class UserDto {
                 .userEmail(user.getUserEmail())
                 .userName(user.getUserName())
                 .userNickname(user.getUserNickname())
-                .userRole(user.getUserRole())
+                .userRole(user.getUserRole().toString())
                 .phoneNumber(user.getPhoneNumber())
                 .userImgUrl(user.getUserImg())
                 .build();
