@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,8 @@ public class MartController {
     @PostMapping("/auth")
     public ResponseEntity<ResponseMessage> authMart(
         @RequestBody @Validated MartAuthRequestDto requestDto) {
-        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 사업자 인증 성공",  martService.authMart(requestDto)), HttpStatus.OK);
+        return new ResponseEntity<>(
+            ResponseMessage.res(HttpStatus.OK, "마트 사업자 인증 성공", martService.authMart(requestDto)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "마트 등록")
@@ -63,8 +65,9 @@ public class MartController {
         @ApiResponse(code = 200, message = "마트 조회 완료")
     })
     @GetMapping("/info")
-    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList() {
-        List<MartListResponseDto> response = martService.findByUserId();
+    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList(
+        @RequestParam(value = "martName", required = false) String martName) {
+        List<MartListResponseDto> response = martService.findByUserId(martName);
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 조회 성공", response), HttpStatus.OK);
     }
 
@@ -99,9 +102,12 @@ public class MartController {
     })
     @GetMapping("/product/{martId}")
     public ResponseEntity<ResponseMessage<ProductListResponse>> findProductByMartId(
+        @RequestParam(required = false) String productName,
         @PathVariable Long martId) {
         return new ResponseEntity<>(
-            ResponseMessage.res(HttpStatus.OK, "마트 상품 조회 성공", martService.findProductByMartId(martId)), HttpStatus.OK);
+            ResponseMessage
+                .res(HttpStatus.OK, "마트 상품 조회 성공", martService.findProductByMartIdAndKeyword(martId, productName)),
+            HttpStatus.OK);
     }
 
     @ApiOperation(value = "마트 상품 재고 추가")

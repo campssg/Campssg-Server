@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 public interface MartRepository extends JpaRepository<Mart, Long> {
 
     List<Mart> findByUser_userId(Long userId);
+    List<Mart> findByUser_userIdAndMartNameContaining(Long userId, String martName);
     Mart findByMartId(Long martId);
 
     @Query(value = "SELECT * ,\n"
