@@ -56,6 +56,25 @@ public class MartService {
         return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
     }
 
+    // 마트 정보 수정
+    public MartListResponseDto editMartInfo(MartEditRequestDto martEditRequestDto) {
+        Mart mart = martRepository.findByMartId(martEditRequestDto.getMartId());
+        if (martEditRequestDto.getRequestYn() != null) {
+            mart.updateRequestYn(martEditRequestDto.getRequestYn());
+        }
+        if (martEditRequestDto.getMartName() != null) {
+            mart.updateMartName(martEditRequestDto.getMartName());
+        }
+        if (martEditRequestDto.getCloseTiem() != null) {
+            mart.updateCloseTime(martEditRequestDto.getCloseTiem());
+        }
+        if (martEditRequestDto.getOpenTiem() != null) {
+            mart.updateOpenTime(martEditRequestDto.getOpenTiem());
+        }
+
+        return new MartListResponseDto(mart);
+    }
+
     // 위치 기반 마트 검색
     public List<MartListResponseDto> searchAroundMart(Double latitude, Double longitude) {
         List<Mart> aroundMart = martRepository.findAroundMart(latitude, longitude);

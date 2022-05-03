@@ -66,4 +66,9 @@ public class Mart extends Auditor {
     public Mart(Long martId) {
         this.martId = martId;
     }
+
+    public void updateMartName(String martName) {this.martName = martName;}
+    public void updateOpenTime(String openTime) {this.openTime = openTime;}
+    public void updateCloseTime(String closeTime) {this.closeTime = closeTime;}
+    public void updateRequestYn(Long requestYn) {this.requestYn = requestYn;}
 }
