@@ -10,13 +10,7 @@ import com.campssg.DB.repository.ProductRepository;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.common.OpenApi;
 import com.campssg.common.S3Uploder;
-import com.campssg.dto.mart.MartAuthRequestDto;
-import com.campssg.dto.mart.MartCertificationRequestDto;
-import com.campssg.dto.mart.MartListResponseDto;
-import com.campssg.dto.mart.MartSaveRequestDto;
-import com.campssg.dto.mart.ProductListResponse;
-import com.campssg.dto.mart.ProductListSaveRequest;
-import com.campssg.dto.mart.ProductSaveRequest;
+import com.campssg.dto.mart.*;
 import com.campssg.util.SecurityUtil;
 import java.io.IOException;
 import java.util.List;
@@ -58,14 +52,15 @@ public class MartService {
                 .build());
     }
 
-    public List<MartListResponseDto> findByUserId(String martName) {
+    public List<MartListResponseDto> findByUserId() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
-        List<Mart> martList;
-        if (martName != null) {
-            martList = martRepository.findByUser_userIdAndMartNameContaining(user.getUserId(), martName);
-        } else {
-            martList = martRepository.findByUser_userId(user.getUserId());
-        }
+        List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
+        return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
+    }
+
+    // 마트 이름으로 검색하기
+    public List<MartListResponseDto> findByMartName(String martName) {
+        List<Mart> martList = martRepository.findByMartNameContaining(martName);
         return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
     }
 
@@ -133,14 +128,14 @@ public class MartService {
 
         if (productName == null) {
             productListByMart = productRepository
-                .findByMart_martId(martId);
+                    .findByMart_martId(martId);
         } else {
             productListByMart = productRepository
-                .findByMart_martIdAndProductNameContains(martId, productName);
+                    .findByMart_martIdAndProductNameContains(martId, productName);
         }
 
         List<ProductListResponse.ProductList> productLists = productListByMart.stream()
-            .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
+                .map(product -> new ProductListResponse().new ProductList(product)).collect(Collectors.toList());
         return new ProductListResponse(productLists, null);
     }
 

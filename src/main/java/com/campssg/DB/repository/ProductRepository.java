@@ -14,4 +14,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "SELECT * FROM product where product_name = :productName and mart_id = :martId", nativeQuery = true)
     Product findByProductNameAndMart_martId(String productName, Long martId);
     List<Product> findByMart_martIdAndCategory_categoryId(Long martId, Long categoryId);
+
+    List<Product> findByMart_martIdAndProductNameContains(Long martId, String productName);
 }

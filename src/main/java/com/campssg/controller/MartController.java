@@ -56,14 +56,24 @@ public class MartController {
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 등록 성공", null), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "마트 키워드로 검색")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "마트 키워드로 검색 완료")
+    })
+    @GetMapping("/{martName}")
+    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> getMartList(
+            @PathVariable String martName) {
+        List<MartListResponseDto> response = martService.findByMartName(martName);
+        return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 조회 성공", response), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "마트 조회")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "마트 조회 완료")
     })
     @GetMapping("/info")
-    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList(
-        @RequestParam(value = "martName", required = false) String martName) {
-        List<MartListResponseDto> response = martService.findByUserId(martName);
+    public ResponseEntity<ResponseMessage<List<MartListResponseDto>>> martList() {
+        List<MartListResponseDto> response = martService.findByUserId();
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 조회 성공", response), HttpStatus.OK);
     }
 
