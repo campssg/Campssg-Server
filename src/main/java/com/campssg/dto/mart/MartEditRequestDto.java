@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class MartEditRequestDto {
     private Long martId;
     private String martName;
-    private String openTiem;
-    private String closeTiem;
+    private String openTime;
+    private String closeTime;
     private Long requestYn;
 }
