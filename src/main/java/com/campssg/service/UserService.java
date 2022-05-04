@@ -93,9 +93,11 @@ public class UserService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        User user = userRepository.findByUserEmail(loginRequestDto.getUserEmail()).orElseThrow();
+
         String jwt = tokenProvider.createToken(authentication);
 
-        return new TokenDto(jwt);
+        return new TokenDto(jwt, user);
     }
 
     @Transactional(readOnly = true)

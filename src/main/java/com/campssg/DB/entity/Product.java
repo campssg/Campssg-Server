@@ -55,4 +55,8 @@ public class Product {
         this.productStock = productStock;
         this.productImgUrl = productImgUrl;
     }
+
+    public void subProductStock(CartItem cartItem) {
+        this.productStock -= cartItem.getCartItemCount();
+    }
 }

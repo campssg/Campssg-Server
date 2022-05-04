@@ -1,12 +1,7 @@
 package com.campssg.controller;
 
 import com.campssg.dto.ResponseMessage;
-import com.campssg.dto.mart.MartAuthRequestDto;
-import com.campssg.dto.mart.MartListResponseDto;
-import com.campssg.dto.mart.MartSaveRequestDto;
-import com.campssg.dto.mart.ProductListResponse;
-import com.campssg.dto.mart.ProductListSaveRequest;
-import com.campssg.dto.mart.ProductSaveRequest;
+import com.campssg.dto.mart.*;
 import com.campssg.service.MartService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -28,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -69,6 +65,15 @@ public class MartController {
         @RequestParam(value = "martName", required = false) String martName) {
         List<MartListResponseDto> response = martService.findByUserId(martName);
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 조회 성공", response), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "마트 정보 수정")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "마트 정보 수정 완료")
+    })
+    @PatchMapping("/edit")
+    public ResponseEntity<MartListResponseDto> editMartInfo(@RequestBody MartEditRequestDto martEditRequestDto) {
+        return ResponseEntity.ok(martService.editMartInfo(martEditRequestDto));
     }
 
     @ApiOperation(value = "해당 마트에 상품 등록")

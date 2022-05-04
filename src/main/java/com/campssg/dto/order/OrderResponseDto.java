@@ -22,6 +22,7 @@ public class OrderResponseDto {
     private String orderState;
     private int cartItemPrice;
     private int charge;
+    private Long requestYn;
     private int totalPrice;
     private List<OrderItemList> orderItemList;
 
@@ -37,5 +38,6 @@ public class OrderResponseDto {
         this.charge = order.getCharge();
         this.totalPrice = order.getTotalPrice();
         this.orderItemList = orderItemList;
+        this.requestYn = order.getMart().getRequestYn();
     }
 }

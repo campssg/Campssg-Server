@@ -22,12 +22,14 @@ public class CartComparisonListResponseDto {
         private String martImg;
         private String martName;
         private int notExistsCnt;
+        private int notExistTotalcnt;
         private int totalPrice;
 
-        public CartComparison(Mart mart, int notExistsCnt, int totalPrice) {
+        public CartComparison(Mart mart, int notExistsCnt, int notExistTotalcnt, int totalPrice) {
             this.martImg = "";
             this.martName = mart.getMartName();
             this.notExistsCnt = notExistsCnt;
+            this.notExistTotalcnt = notExistTotalcnt;
             this.totalPrice = totalPrice;
         }
     }
