@@ -79,7 +79,7 @@ public class MartService {
         if (martEditRequestDto.getOpenTiem() != null) {
             mart.updateOpenTime(martEditRequestDto.getOpenTiem());
         }
-
+        martRepository.save(mart);
         return new MartListResponseDto(mart);
     }
 
