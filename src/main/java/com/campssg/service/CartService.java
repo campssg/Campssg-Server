@@ -48,9 +48,10 @@ public class CartService {
              cartRepository.save(Cart.builder().user(user).totalCount(0).totalPrice(0).build()); // 없을 경우 장바구니 등록
          }
          List<CartItem> cartItemList = cartItemRepository.findByCart_cartId(cart.getCartId()); // 장바구니에 있는 상품 목록 가져오기
+         Long martId = cartItemList.get(0).getProduct().getMart().getMartId();
          List<CartInfoResponseDto.CartItemList> cartItemLists = cartItemList.stream()
                  .map(cartItem -> new CartInfoResponseDto().new CartItemList(cartItem)).collect(Collectors.toList());
-         return new CartInfoResponseDto(cart, cartItemLists);
+         return new CartInfoResponseDto(cart, cartItemLists, martId);
      }
 
      // 장바구니에 상품 담기

@@ -1,7 +1,9 @@
 package com.campssg.service;
 
+import com.campssg.DB.entity.Mart;
 import com.campssg.DB.entity.Role;
 import com.campssg.DB.entity.User;
+import com.campssg.DB.repository.MartRepository;
 import com.campssg.DB.repository.UserRepository;
 import com.campssg.common.S3Uploder;
 import com.campssg.config.jwt.TokenProvider;
@@ -11,6 +13,7 @@ import com.campssg.dto.user.NicknameDto;
 import com.campssg.dto.user.PasswordDto;
 import com.campssg.dto.user.TokenDto;
 import com.campssg.dto.user.UserDto;
+import com.campssg.dto.user.UserMartResponseDto;
 import com.campssg.exception.DuplicateMemberException;
 import com.campssg.util.SecurityUtil;
 import java.io.IOException;
@@ -31,18 +34,20 @@ public class UserService {
     private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final MartRepository martRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final S3Uploder s3Uploder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository, MartRepository martRepository, PasswordEncoder passwordEncoder,
         TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, S3Uploder s3Uploder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.s3Uploder = s3Uploder;
+        this.martRepository = martRepository;
     }
 
     @Transactional
@@ -141,5 +146,11 @@ public class UserService {
 
         String imgUrl = file == null ? null : s3Uploder.upload(file, "user");
         user.updateImg(imgUrl);
+    }
+
+    @Transactional(readOnly = true)
+    public UserMartResponseDto getMartInfo(Long martId) {
+        Mart mart = martRepository.findByMartId(martId);
+        return new UserMartResponseDto(mart.getMartName(), mart.getMartAddress(), mart.getUser().getPhoneNumber());
     }
 }
