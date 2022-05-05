@@ -20,5 +20,6 @@ public class AddRequestedProductDto {
     @NotNull
     private int requestedProductCount;
 
+    @NotNull
     private String requestedProductReference;
 }
