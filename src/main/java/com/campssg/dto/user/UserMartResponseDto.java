@@ -8,5 +8,6 @@ import lombok.Getter;
 public class UserMartResponseDto {
     private String martName;
     private String martNumber;
+    private Long requestYn;
     private String martAddress;
 }
