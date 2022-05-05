@@ -15,8 +15,4 @@ public class OrderRequestDto {
     @NotNull
     @ApiModelProperty(value = "예약 시간")
     private String reservedTime;
-
-    @NotNull
-    @ApiModelProperty(value = "요청 물품 유무")
-    private Boolean requestYn;
 }
