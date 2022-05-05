@@ -70,7 +70,7 @@ public class OrderService {
         Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseThrow();
         List<CartItem> cartItemList = cartItemRepository.findByCart_cartId(cart.getCartId()); // 장바구니에 있는 상품 목록 가져오기
         Mart mart = cartItemList.get(0).getProduct().getMart(); // cartItem에서 마트 정보 가져오기
-        Order order = addOrder(user, mart, cart, reservedDate, orderRequestDto.getReservedTime());
+        Order order = addOrder(user, mart, cart, reservedDate, orderRequestDto.getReservedTime(), orderRequestDto.getRequestYn());
         List<OrderItemList> orderItemLists = addOrderItem(cartItemList,
             order); // cartItemList에 있는 상품 목록 orderItemList로 옮기기
         cart.setTotalCount(0);
@@ -118,17 +118,17 @@ public class OrderService {
     }
 
     // 주문서 생성
-    public Order addOrder(User user, Mart mart, Cart cart, LocalDateTime dateTime, String reservedTime)
+    public Order addOrder(User user, Mart mart, Cart cart, LocalDateTime dateTime, String reservedTime, boolean request)
         throws IOException, WriterException {
         int charge = setCostCharge(cart.getTotalPrice()) + setPeriodCharge(dateTime, LocalDateTime.now());
-
+        OrderState orderState = request? OrderState.가격흥정중 : OrderState.주문완료;
         Order order = orderRepository.save(Order.builder()
             .orderId(setOrderNumber())
             .mart(mart)
             .user(user)
             .reservedDate(dateTime)
             .reservedTime(reservedTime)
-            .orderState(OrderState.주문완료)
+            .orderState(orderState)
             .charge(charge)
             .totalPrice(cart.getTotalPrice() + charge)
             .build());
