@@ -2,7 +2,6 @@ package com.campssg.controller;
 
 import com.campssg.dto.ResponseMessage;
 import com.campssg.dto.category.CategorySaveRequestDto;
-import com.campssg.dto.mart.MartSaveRequestDto;
 import com.campssg.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

@@ -28,8 +28,8 @@ public class OrderDetailResponseDto {
         this.orderId = order.getOrderId();
         this.martName = order.getMart().getMartName();
         this.userName = order.getUser().getUserName();
-        this.pickup_day = order.getReservedAt().format(DateTimeFormatter.ofPattern("MM/dd"));
-        this.pickup_time = order.getReservedAt().format(DateTimeFormatter.ofPattern("hh:mm"));
+        this.pickup_day = order.getReservedDate().format(DateTimeFormatter.ofPattern("MM/dd"));
+        this.pickup_time = order.getReservedTime();
         this.order_phoneNumber = order.getUser().getPhoneNumber();
         this.orderState = order.getOrderState().toString();
         this.cartItemPrice = order.getTotalPrice() - order.getCharge();

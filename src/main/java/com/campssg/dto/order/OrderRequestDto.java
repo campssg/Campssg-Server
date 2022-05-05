@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class OrderRequestDto {
-    @ApiModelProperty(value = "예약시간")
-    private LocalDateTime reservedAt;
+    @ApiModelProperty(value = "예약 날짜")
+    private String reservedDate;
+
+    @ApiModelProperty(value = "예약 시간")
+    private String reservedTime;
 }

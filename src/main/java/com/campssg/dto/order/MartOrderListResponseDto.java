@@ -22,8 +22,8 @@ public class MartOrderListResponseDto {
         this.orderId = order.getOrderId();
         this.userName = order.getUser().getUserName();
         this.order_phoneNumber = order.getUser().getPhoneNumber();
-        this.pickup_day = order.getReservedAt().format(DateTimeFormatter.ofPattern("MM/dd"));
-        this.pickup_time = order.getReservedAt().format(DateTimeFormatter.ofPattern("hh:mm"));
+        this.pickup_day = order.getReservedDate().format(DateTimeFormatter.ofPattern("MM/dd"));
+        this.pickup_time = order.getReservedTime();
         this.orderState = order.getOrderState().toString();
         this.totalPrice = order.getTotalPrice();
     }

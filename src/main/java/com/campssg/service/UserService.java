@@ -151,6 +151,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserMartResponseDto getMartInfo(Long martId) {
         Mart mart = martRepository.findByMartId(martId);
-        return new UserMartResponseDto(mart.getMartName(), mart.getMartAddress(), mart.getUser().getPhoneNumber());
+        return new UserMartResponseDto(mart.getMartName(), mart.getMartAddress(), mart.getRequestYn(), mart.getUser().getPhoneNumber());
     }
 }
