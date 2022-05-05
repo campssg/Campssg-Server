@@ -28,6 +28,7 @@ public class RequestedProductService {
     // 요청 상품 추가
     public RequestedProduct addRequestedProduct(AddRequestedProductDto addRequestedProductDto) throws IOException {
         Order order = orderRepository.findByOrderId(addRequestedProductDto.getOrderId());
+
         RequestedProduct requestedProduct = requestedProductRepository.save(RequestedProduct.builder()
                 .order(order)
                 .mart(order.getMart())
@@ -38,6 +39,8 @@ public class RequestedProductService {
                 .requestedProductState(RequestedProductState.가격요청중)
                 .requestedProductReference(addRequestedProductDto.getRequestedProductReference())
                 .build());
+
+        order.updateStatus(OrderState.가격흥정중);
         return requestedProduct;
     }
 
