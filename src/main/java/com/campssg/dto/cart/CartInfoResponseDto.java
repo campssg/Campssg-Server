@@ -11,15 +11,21 @@ import java.util.List;
 @NoArgsConstructor
 public class CartInfoResponseDto<CartItemList> {
     private Long cartId;
+    private Long martId;
     private int totalCount;
     private int totalPrice;
     private List<CartItemList> cartItemList;
 
-    public CartInfoResponseDto(Cart cart, List<CartItemList> cartItemLists) {
+    public CartInfoResponseDto(Cart cart, List<CartItemList> cartItemLists, Long martId) {
         this.cartId = cart.getCartId();
         this.totalCount = cart.getTotalCount();
         this.totalPrice = cart.getTotalPrice();
+        this.martId = martId;
         this.cartItemList = cartItemLists;
+    }
+
+    public CartInfoResponseDto(Long martId) {
+        this.martId = martId;
     }
 
     @Getter

@@ -113,4 +113,13 @@ public class UserController {
         userService.deleteUser(deleteRequestDto);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "탈퇴가 완료되었습니다"));
     }
+
+    @ApiOperation(value = "사용자가 조회하는 마트정보")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "회원 탈퇴 완료")
+    })
+    @GetMapping("/mart/{martId}")
+    public ResponseEntity<UserMartResponseDto> deleteUser(@PathVariable Long martId) {
+        return ResponseEntity.ok(userService.getMartInfo(martId));
+    }
 }
