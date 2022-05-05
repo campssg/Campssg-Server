@@ -29,8 +29,8 @@ public class OrderResponseDto {
     public OrderResponseDto(Order order, List<OrderItemList> orderItemList) {
         this.orderId = order.getOrderId();
         this.martName = order.getMart().getMartName();
-        this.pickup_day = order.getReservedAt().format(DateTimeFormatter.ofPattern("MM/dd"));
-        this.pickup_time = order.getReservedAt().format(DateTimeFormatter.ofPattern("hh:mm"));
+        this.pickup_day = order.getReservedDate().format(DateTimeFormatter.ofPattern("MM/dd"));
+        this.pickup_time = order.getReservedTime();
         this.userName = order.getUser().getUserName();
         this.order_phoneNumber = order.getUser().getPhoneNumber();
         this.orderState = order.getOrderState().toString();

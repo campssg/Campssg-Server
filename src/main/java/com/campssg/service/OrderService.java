@@ -1,6 +1,29 @@
 package com.campssg.service;
 
+import com.campssg.DB.entity.Cart;
+import com.campssg.DB.entity.CartItem;
+import com.campssg.DB.entity.Mart;
+import com.campssg.DB.entity.Order;
+import com.campssg.DB.entity.OrderItem;
+import com.campssg.DB.entity.OrderState;
+import com.campssg.DB.entity.Product;
+import com.campssg.DB.entity.RequestedProduct;
+import com.campssg.DB.entity.User;
+import com.campssg.DB.repository.CartItemRepository;
+import com.campssg.DB.repository.CartRepository;
+import com.campssg.DB.repository.OrderItemRepository;
+import com.campssg.DB.repository.OrderRepository;
+import com.campssg.DB.repository.RequestedProductRepository;
+import com.campssg.DB.repository.UserRepository;
 import com.campssg.common.S3Uploder;
+import com.campssg.dto.order.MartOrderListResponseDto;
+import com.campssg.dto.order.OrderDetailResponseDto;
+import com.campssg.dto.order.OrderItemList;
+import com.campssg.dto.order.OrderRequestDto;
+import com.campssg.dto.order.OrderResponseDto;
+import com.campssg.dto.order.RequestedProductList;
+import com.campssg.dto.order.UserOrderListResponseDto;
+import com.campssg.util.SecurityUtil;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageConfig;
@@ -10,16 +33,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import javax.imageio.ImageIO;
-import com.campssg.DB.entity.*;
-import com.campssg.DB.repository.*;
-import com.campssg.dto.order.*;
-import com.campssg.util.SecurityUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -27,6 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -39,18 +57,22 @@ public class OrderService {
     private final CartItemRepository cartItemRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
-    private final MartRepository martRepository;
     private final S3Uploder s3Uploder;
     private final RequestedProductRepository requestedProductRepository;
 
     // 주문 시 주문서 생성하고 주문 정보 반환
     public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) throws IOException, WriterException {
-        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime reservedDate = LocalDateTime.parse(orderRequestDto.getReservedDate() + " 00:00:00", formatter);
+
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail)
+            .orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
         Cart cart = cartRepository.findByUser_userId(user.getUserId()).orElseThrow();
         List<CartItem> cartItemList = cartItemRepository.findByCart_cartId(cart.getCartId()); // 장바구니에 있는 상품 목록 가져오기
         Mart mart = cartItemList.get(0).getProduct().getMart(); // cartItem에서 마트 정보 가져오기
-        Order order = addOrder(user, mart, cart, orderRequestDto);
-        List<OrderItemList> orderItemLists = addOrderItem(cartItemList, order); // cartItemList에 있는 상품 목록 orderItemList로 옮기기
+        Order order = addOrder(user, mart, cart, reservedDate);
+        List<OrderItemList> orderItemLists = addOrderItem(cartItemList,
+            order); // cartItemList에 있는 상품 목록 orderItemList로 옮기기
         cart.setTotalCount(0);
         cart.setTotalPrice(0);
         cartRepository.save(cart);
@@ -61,19 +83,22 @@ public class OrderService {
     public OrderDetailResponseDto getOrderInfo(Long orderId) {
         Order order = orderRepository.findByOrderId(orderId);
         List<OrderItem> orderItemList = orderItemRepository.findByOrder_orderId(orderId);
-        List<OrderItemList> orderItemLists = orderItemList.stream().map(orderItem -> new OrderItemList(orderItem)).collect(Collectors.toList());
+        List<OrderItemList> orderItemLists = orderItemList.stream().map(orderItem -> new OrderItemList(orderItem))
+            .collect(Collectors.toList());
         List<RequestedProduct> requestedProducts = requestedProductRepository.findByOrder_orderId(orderId).orElse(null);
         if (requestedProducts.isEmpty()) {
             return new OrderDetailResponseDto(order, orderItemLists, null);
         } else {
-            List<RequestedProductList> requestedProductLists = requestedProducts.stream().map(requestedProduct -> new RequestedProductList(requestedProduct)).collect(Collectors.toList());
+            List<RequestedProductList> requestedProductLists = requestedProducts.stream()
+                .map(requestedProduct -> new RequestedProductList(requestedProduct)).collect(Collectors.toList());
             return new OrderDetailResponseDto(order, orderItemLists, requestedProductLists);
         }
     }
 
     // 사용자 주문 내역 조회(목록 조회)
     public List<UserOrderListResponseDto> getUserOrderList() {
-        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail)
+            .orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
         List<Order> orderList = orderRepository.findByUser_userId(user.getUserId());
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
@@ -86,25 +111,26 @@ public class OrderService {
 
     // 픽업준비완료인 주문 내역 조회
     public List<UserOrderListResponseDto> getPreparedOrderList() {
-        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail)
+            .orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
         List<Order> orderList = orderRepository.findByUser_userIdAndOrderState(user.getUserId(), OrderState.픽업준비완료);
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
     // 주문서 생성
-    public Order addOrder(User user, Mart mart, Cart cart, OrderRequestDto orderRequestDto)
+    public Order addOrder(User user, Mart mart, Cart cart, LocalDateTime dateTime)
         throws IOException, WriterException {
-        int charge = setCostCharge(cart.getTotalPrice())+setPeriodCharge(orderRequestDto.getReservedAt(), LocalDateTime.now());
+        int charge = setCostCharge(cart.getTotalPrice()) + setPeriodCharge(dateTime, LocalDateTime.now());
 
         Order order = orderRepository.save(Order.builder()
-                .orderId(setOrderNumber())
-                .mart(mart)
-                .user(user)
-                .reservedAt(orderRequestDto.getReservedAt())
-                .orderState(OrderState.주문완료)
-                .charge(charge)
-                .totalPrice(cart.getTotalPrice()+charge)
-                .build());
+            .orderId(setOrderNumber())
+            .mart(mart)
+            .user(user)
+            .reservedDate(dateTime)
+            .orderState(OrderState.주문완료)
+            .charge(charge)
+            .totalPrice(cart.getTotalPrice() + charge)
+            .build());
 
         createQrImg(order);
         return order;
@@ -113,15 +139,15 @@ public class OrderService {
     // 주문서에 상품 추가
     public List<OrderItemList> addOrderItem(List<CartItem> cartItemList, Order order) {
         List<OrderItemList> orderItemLists = new ArrayList<>();
-        for (int i=0; i<cartItemList.size(); i++) {
+        for (int i = 0; i < cartItemList.size(); i++) {
             CartItem cartItem = cartItemList.get(i);
             Product product = cartItem.getProduct();
             product.subProductStock(cartItem);
             OrderItem orderItem = orderItemRepository.save(OrderItem.builder()
-                    .order(order)
-                    .product(product)
-                    .orderItemCount(cartItem.getCartItemCount())
-                    .build());
+                .order(order)
+                .product(product)
+                .orderItemCount(cartItem.getCartItemCount())
+                .build());
             cartItemRepository.delete(cartItem);
             OrderItemList orderItemList = new OrderItemList(orderItem);
             orderItemLists.add(orderItemList);
@@ -200,10 +226,11 @@ public class OrderService {
 
         //QRCode 생성
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(codeurl, BarcodeFormat.QR_CODE,200, 200);    // 200,200은 width, height
+        BitMatrix bitMatrix = qrCodeWriter
+            .encode(codeurl, BarcodeFormat.QR_CODE, 200, 200);    // 200,200은 width, height
 
-        MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrcodeColor,backgroundColor);
-        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix,matrixToImageConfig);
+        MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrcodeColor, backgroundColor);
+        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix, matrixToImageConfig);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

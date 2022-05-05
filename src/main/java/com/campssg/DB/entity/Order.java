@@ -25,8 +25,11 @@ public class Order extends Auditor {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    @Column(name = "reserved_at")
-    private LocalDateTime reservedAt;
+    @Column(name = "reserved_date")
+    private LocalDateTime reservedDate;
+
+    @Column(name = "reserved_time")
+    private String reservedTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_state")
