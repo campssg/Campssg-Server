@@ -73,11 +73,11 @@ public class MartService {
         if (martEditRequestDto.getMartName() != null) {
             mart.updateMartName(martEditRequestDto.getMartName());
         }
-        if (martEditRequestDto.getCloseTiem() != null) {
-            mart.updateCloseTime(martEditRequestDto.getCloseTiem());
+        if (martEditRequestDto.getCloseTime() != null) {
+            mart.updateCloseTime(martEditRequestDto.getCloseTime());
         }
-        if (martEditRequestDto.getOpenTiem() != null) {
-            mart.updateOpenTime(martEditRequestDto.getOpenTiem());
+        if (martEditRequestDto.getOpenTime() != null) {
+            mart.updateOpenTime(martEditRequestDto.getOpenTime());
         }
         martRepository.save(mart);
         return new MartListResponseDto(mart);
