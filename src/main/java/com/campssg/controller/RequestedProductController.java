@@ -82,7 +82,7 @@ public class RequestedProductController {
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "가격 요청이 완료되었습니다"));
     }
 
-    @ApiOperation(value = "서비스 이용자 전체 요청 상품 조회")
+    @ApiOperation(value = "마트 운영자 전체 요청 상품 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "전체 요청 상품 조회 완료")
     })
@@ -91,7 +91,7 @@ public class RequestedProductController {
         return ResponseEntity.ok(requestedProductService.getTotalRequestedProductFromMart(martId));
     }
 
-    @ApiOperation(value = "마트 운영자 전체 요청 상품 조회")
+    @ApiOperation(value = "서비스 이용자 전체 요청 상품 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "전체 요청 상품 조회 완료")
     })
