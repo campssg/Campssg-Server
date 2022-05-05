@@ -12,14 +12,16 @@ public class GetRequestedProductDto {
     private int requestedProductPrice;
     private int requestedProductCount;
     private String requestedProductState;
-    private String requestedProductImg;
+    private String requestedProductReference;
+    private String martName;
 
     public GetRequestedProductDto(RequestedProduct requestedProduct) {
+        this.martName = requestedProduct.getMart().getMartName();
         this.requestedProductId = requestedProduct.getRequestedProductId();
         this.requestedProductName = requestedProduct.getRequestedProductName();
         this.requestedProductPrice = requestedProduct.getRequestedProductPrice();
         this.requestedProductCount = requestedProduct.getRequestedProductCount();
         this.requestedProductState = requestedProduct.getRequestedProductState().toString();
-        this.requestedProductImg = requestedProduct.getRequestedProductReference();
+        this.requestedProductReference = requestedProduct.getRequestedProductReference();
     }
 }
