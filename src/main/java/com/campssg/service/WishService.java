@@ -62,6 +62,6 @@ public class WishService {
     public List<MartListResponseDto> getMartWish() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         List<MartWishlist> martWishlists = martWishRepository.findByUser_userId(user.getUserId());
-        return martWishlists.stream().map(martWishlist -> new MartListResponseDto(martWishlist.getMart())).collect(Collectors.toList());
+        return martWishlists.stream().map(martWishlist -> new MartListResponseDto(martWishlist.getMart(), null, null)).collect(Collectors.toList());
     }
 }

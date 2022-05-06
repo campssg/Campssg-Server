@@ -28,8 +28,9 @@ public class CartComparisonListResponseDto {
         private int notExistsCnt;
         private int notExistTotalcnt;
         private int totalPrice;
+        private Double distance;
 
-        public CartComparison(Mart mart, int notExistsCnt, int notExistTotalcnt, int totalPrice) {
+        public CartComparison(Mart mart, int notExistsCnt, int notExistTotalcnt, int totalPrice, Double latitude, Double longitude) {
             this.martId = mart.getMartId();
             this.martAddress = mart.getMartAddress();
             this.openTime = mart.getOpenTime();
@@ -39,6 +40,17 @@ public class CartComparisonListResponseDto {
             this.notExistsCnt = notExistsCnt;
             this.notExistTotalcnt = notExistTotalcnt;
             this.totalPrice = totalPrice;
+            this.distance = distance(mart.getLatitude(), mart.getLongitude(), latitude, longitude);
+        }
+
+        private Double distance(Double lat1, Double long1, Double lat2, Double long2) {
+            double theta = long1 - long2;
+            double dist = Math.sin(lat1 * Math.PI / 180.0) * Math.sin(lat2 * Math.PI / 180.0)
+                    + Math.cos(lat1*Math.PI/180.0)*Math.cos(lat2*Math.PI/180.0)*Math.cos(theta*Math.PI/180.0);
+            dist = Math.acos(dist);
+            dist = dist*180/Math.PI;
+            dist = dist * 60 *1.1515*1609.344;
+            return dist;
         }
     }
 }

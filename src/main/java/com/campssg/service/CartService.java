@@ -142,7 +142,7 @@ public class CartService {
                     notExistTotalCnt += cartItem.getCartItemCount(); // 존재하지 않는 상품 전체 개수
                 }
             }
-            responseDto.add(new CartComparison(mart, notExistCnt, notExistTotalCnt, totalPrice));
+            responseDto.add(new CartComparison(mart, notExistCnt, notExistTotalCnt, totalPrice, latitude, longitude));
         }
         return new CartComparisonListResponseDto(responseDto);
     }

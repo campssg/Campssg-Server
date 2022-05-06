@@ -55,13 +55,13 @@ public class MartService {
     public List<MartListResponseDto> findByUserId() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         List<Mart> martList = martRepository.findByUser_userId(user.getUserId());
-        return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
+        return martList.stream().map(mart -> new MartListResponseDto(mart, null, null)).collect(Collectors.toList());
     }
 
     // 마트 이름으로 검색하기
     public List<MartListResponseDto> findByMartName(String martName) {
         List<Mart> martList = martRepository.findByMartNameContaining(martName);
-        return martList.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
+        return martList.stream().map(mart -> new MartListResponseDto(mart, null, null)).collect(Collectors.toList());
     }
 
     // 마트 정보 수정
@@ -80,13 +80,13 @@ public class MartService {
             mart.updateOpenTime(martEditRequestDto.getOpenTime());
         }
         martRepository.save(mart);
-        return new MartListResponseDto(mart);
+        return new MartListResponseDto(mart, null, null);
     }
 
     // 위치 기반 마트 검색
     public List<MartListResponseDto> searchAroundMart(Double latitude, Double longitude) {
         List<Mart> aroundMart = martRepository.findAroundMart(latitude, longitude);
-        return aroundMart.stream().map(mart -> new MartListResponseDto(mart)).collect(Collectors.toList());
+        return aroundMart.stream().map(mart -> new MartListResponseDto(mart, latitude, longitude)).collect(Collectors.toList());
     }
 
     public void saveProductToMart(ProductSaveRequest requestDto, MultipartFile file) throws IOException {
