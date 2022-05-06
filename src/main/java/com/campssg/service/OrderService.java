@@ -225,7 +225,7 @@ public class OrderService {
     }
 
     private void createQrImg(Order order) throws IOException, WriterException, WriterException {
-        String url = "127.0.0.1:8080/order/" + order.getOrderId() + "/주문완료";
+        String url =  order.getOrderId().toString();
         String codeurl = new String(url.getBytes("UTF-8"), "ISO-8859-1");
 
         // QRCode 색상값
