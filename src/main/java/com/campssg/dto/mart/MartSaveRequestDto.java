@@ -19,6 +19,10 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 1, required = true, dataType = "String", value = "마트이름")
     private String martName;
 
+    @NotNull(message = "마트번호 필수입니다.")
+    @ApiModelProperty(position = 1, required = true, dataType = "String", value = "마트번호")
+    private String martNumber;
+
     @NotNull(message = "마트 경도")
     @ApiModelProperty(position = 2, required = true, dataType = "Long", value = "마트 경도")
     private Double longitude;
@@ -49,6 +53,7 @@ public class MartSaveRequestDto {
     public Mart toEntity(User user) {
         return Mart.builder()
             .martName(martName)
+            .martNumber(martNumber)
             .martAddress(martAddress)
             .openTime(openTime)
             .closeTime(closeTime)
