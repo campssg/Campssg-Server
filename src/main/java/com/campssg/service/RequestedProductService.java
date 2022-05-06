@@ -63,6 +63,19 @@ public class RequestedProductService {
         return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
     }
 
+    // 서비스 이용자 요청 상품 상태에 따른 조회
+    public List<GetRequestedProductDto> getRequestedProductByState(String orderState) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByUser_userIdAndRequestedProductState(user.getUserId(), RequestedProductState.valueOf(orderState));
+        return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
+    }
+
+    // 마트 운영자 요청 상품 상태에 따른 조회
+    public List<GetRequestedProductDto> getRequestedProductByState(Long martId, String orderState) {
+        List<RequestedProduct> requestedProducts = requestedProductRepository.findByMart_martIdAndRequestedProductState(martId, RequestedProductState.valueOf(orderState));
+        return requestedProducts.stream().map(requestedProduct -> new GetRequestedProductDto(requestedProduct)).collect(Collectors.toList());
+    }
+
     // 마트 운영자가 모든 요청상품 조회
     public List<GetRequestedProductDto> getTotalRequestedProductFromMart(Long martId) {
         List<RequestedProduct> requestedProducts = requestedProductRepository.findByMart_martId(martId);

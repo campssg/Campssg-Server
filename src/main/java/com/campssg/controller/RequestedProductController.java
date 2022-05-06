@@ -99,4 +99,22 @@ public class RequestedProductController {
     public ResponseEntity<List<GetRequestedProductDto>> getTotalRequestedProductFromGuest() {
         return ResponseEntity.ok(requestedProductService.getTotalRequestedProductFromGuest());
     }
+
+    @ApiOperation(value = "마트 운영자 요청 상품 상태에 따른 조회")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "요청 상품 조회 완료")
+    })
+    @GetMapping("/get/{martId}/{orderState}")
+    public ResponseEntity<List<GetRequestedProductDto>> getRequestedProductByState(@PathVariable Long martId, @PathVariable String orderState) {
+        return ResponseEntity.ok(requestedProductService.getRequestedProductByState(martId, orderState));
+    }
+
+    @ApiOperation(value = "서비스 이용자 요청 상품 상태에 따른 조회")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "요청 상품 조회 완료")
+    })
+    @GetMapping("/get/{orderState}")
+    public ResponseEntity<List<GetRequestedProductDto>> getRequestedProductByState(@PathVariable String orderState) {
+        return ResponseEntity.ok(requestedProductService.getRequestedProductByState(orderState));
+    }
 }

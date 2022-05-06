@@ -84,12 +84,21 @@ public class OrderController {
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "주문 상태 변경 완료"));
     }
 
-    @ApiOperation(value = "주문 상태에 따른 주문 목록 조회")
+    @ApiOperation(value = "서비스 이용자 주문 상태에 따른 주문 목록 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "주문 목록 조회 성공")
     })
     @GetMapping("/get/{orderState}")
     public ResponseEntity<List<UserOrderListResponseDto>> getOrderListByState(@PathVariable String orderState) {
         return ResponseEntity.ok(orderService.getOrderListByState(orderState));
+    }
+
+    @ApiOperation(value = "마트 운영자 주문 상태에 따른 주문 목록 조회")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "주문 목록 조회 성공")
+    })
+    @GetMapping("/get/{martId}/{orderState}")
+    public ResponseEntity<List<MartOrderListResponseDto>> getOrderListByState(@PathVariable Long martId, @PathVariable String orderState) {
+        return ResponseEntity.ok(orderService.getOrderListByState(martId, orderState));
     }
 }

@@ -117,11 +117,17 @@ public class OrderService {
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
-    // 주문 상태에 따른 주문 내역 조회
+    // 서비스 이용자 주문 상태에 따른 주문 내역 조회
     public List<UserOrderListResponseDto> getOrderListByState(String orderState) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
         List<Order> orderList = orderRepository.findByUser_userIdAndOrderState(user.getUserId(), OrderState.valueOf(orderState));
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
+    }
+
+    // 마트 운영자 주문 상태에 따른 주문 현황 조회
+    public List<MartOrderListResponseDto> getOrderListByState(Long martId, String orderState) {
+        List<Order> orderList = orderRepository.findByMart_martIdAndOrderState(martId, OrderState.valueOf(orderState));
+        return orderList.stream().map(order -> new MartOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
     // 주문서 생성
