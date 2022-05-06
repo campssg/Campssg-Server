@@ -21,6 +21,7 @@ public class OrderDetailResponseDto {
     private int cartItemPrice;
     private int charge;
     private int totalPrice;
+    private String qrcode_url;
     private List<OrderItemList> orderItemList;
     private List<RequestedProductList> requestedProductList;
 
@@ -36,6 +37,7 @@ public class OrderDetailResponseDto {
         this.charge = order.getCharge();
         this.totalPrice = order.getTotalPrice();
         this.orderItemList = orderItemList;
+        this.qrcode_url = order.getQrcodeUrl();
         if(requestedProductList != null ) {
             this.requestedProductList = requestedProductList;
         }

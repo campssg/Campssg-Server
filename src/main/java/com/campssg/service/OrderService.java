@@ -117,6 +117,13 @@ public class OrderService {
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
+    // 주문 상태에 따른 주문 내역 조회
+    public List<UserOrderListResponseDto> getOrderListByState(String orderState) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        List<Order> orderList = orderRepository.findByUser_userIdAndOrderState(user.getUserId(), OrderState.valueOf(orderState));
+        return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
+    }
+
     // 주문서 생성
     public Order addOrder(User user, Mart mart, Cart cart, LocalDateTime dateTime)
         throws IOException, WriterException {
@@ -153,11 +160,6 @@ public class OrderService {
             orderItemLists.add(orderItemList);
         }
         return orderItemLists;
-    }
-
-    // 주문 시 마트 재고 줄이기
-    public void subMartProduct(CartItem cartItem) {
-
     }
 
     // 주문번호 생성
