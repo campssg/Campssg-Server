@@ -80,6 +80,8 @@ public class RequestedProductService {
     public void acceptedProduct(Long requestedProductId) {
         RequestedProduct requestedProduct = requestedProductRepository.findByRequestedProductId(requestedProductId);
         requestedProduct.setRequestedProductState(RequestedProductState.흥정완료);
+        Order order = orderRepository.findByOrderId(requestedProduct.getOrder().getOrderId());
+        order.setOrderState(OrderState.결제대기중);
     }
 
     // 마트 측에서 가격 제시
