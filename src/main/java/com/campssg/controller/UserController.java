@@ -130,6 +130,6 @@ public class UserController {
     @PostMapping("/add/{fcmToken}")
     public ResponseEntity<ResponseMessage> addFcmToken(@PathVariable String fcmToken) {
         userService.updateFcmToken(fcmToken);
-        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "탈퇴가 완료되었습니다"));
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "토큰 등록이 완료되었습니다"));
     }
 }
