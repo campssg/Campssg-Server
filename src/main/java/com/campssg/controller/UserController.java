@@ -122,4 +122,14 @@ public class UserController {
     public ResponseEntity<UserMartResponseDto> deleteUser(@PathVariable Long martId) {
         return ResponseEntity.ok(userService.getMartInfo(martId));
     }
+
+    @ApiOperation(value = "파이어베이스 토큰 등록")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "등록 완료")
+    })
+    @PostMapping("/add/{fcmToken}")
+    public ResponseEntity<ResponseMessage> addFcmToken(@PathVariable String fcmToken) {
+        userService.updateFcmToken(fcmToken);
+        return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "탈퇴가 완료되었습니다"));
+    }
 }

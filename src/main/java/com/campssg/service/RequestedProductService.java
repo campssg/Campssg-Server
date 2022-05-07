@@ -95,6 +95,8 @@ public class RequestedProductService {
         requestedProduct.setRequestedProductState(RequestedProductState.흥정완료);
         Order order = orderRepository.findByOrderId(requestedProduct.getOrder().getOrderId());
         order.setOrderState(OrderState.결제대기중);
+        order.setTotalPrice(requestedProduct.getRequestedProductPrice()+order.getTotalPrice());
+        orderRepository.save(order);
     }
 
     // 마트 측에서 가격 제시

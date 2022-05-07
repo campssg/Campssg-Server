@@ -153,4 +153,11 @@ public class UserService {
         Mart mart = martRepository.findByMartId(martId);
         return new UserMartResponseDto(mart.getMartName(), mart.getMartAddress(), mart.getRequestYn(), mart.getMartNumber());
     }
+
+    @Transactional
+    public void updateFcmToken(String token) {
+        User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
+        user.setAccessToken(token);
+        userRepository.save(user);
+    }
 }
