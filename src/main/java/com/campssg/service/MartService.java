@@ -35,10 +35,11 @@ public class MartService {
 
     private final S3Uploder s3Uploder;
 
-    public void saveMart(MartSaveRequestDto requestDto) {
+    public void saveMart(MartSaveRequestDto requestDto, MultipartFile file) throws IOException {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
 
-        martRepository.save(requestDto.toEntity(user));
+        String imgUrl = file == null ? null : s3Uploder.upload(file, "mart");
+        martRepository.save(requestDto.toEntity(user, imgUrl));
     }
 
     public boolean authMart(MartAuthRequestDto requestDto) {

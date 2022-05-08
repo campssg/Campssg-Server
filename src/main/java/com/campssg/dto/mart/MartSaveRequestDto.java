@@ -50,11 +50,12 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 8, required = true, dataType = "Long", value = "마트 물품 요청 ")
     private Long requestYn;
 
-    public Mart toEntity(User user) {
+    public Mart toEntity(User user, String imgUrl) {
         return Mart.builder()
             .martName(martName)
             .martNumber(martNumber)
             .martAddress(martAddress)
+            .martImg(imgUrl)
             .openTime(openTime)
             .closeTime(closeTime)
             .latitude(latitude)
