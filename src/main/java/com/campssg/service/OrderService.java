@@ -243,7 +243,7 @@ public class OrderService {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        ImageIO.write(bufferedImage, "jpg", baos);
+        ImageIO.write(bufferedImage, "png", baos);
         baos.flush();
 
         MultipartFile multipartFile = new MockMultipartFile("qrcode", "qrcode", "image/jpg", baos.toByteArray());
