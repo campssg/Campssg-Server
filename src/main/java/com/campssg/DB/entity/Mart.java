@@ -36,6 +36,9 @@ public class Mart extends Auditor {
     @Column(name = "mart_number")
     private String martNumber;
 
+    @Column(name = "mart_img")
+    private String martImg;
+
     @Column(name = "open_time")
     private String openTime;
 
@@ -52,13 +55,14 @@ public class Mart extends Auditor {
     private Double longitude;
 
     @Builder
-    public Mart(Long martId, User user, String martName,  String martNumber, String martAddress, Long requestYn, String openTime,
+    public Mart(Long martId, User user, String martName,  String martNumber, String martAddress, String martImg, Long requestYn, String openTime,
         String closeTime, Double latitude, Double longitude) {
         this.martId = martId;
         this.user = user;
         this.martName = martName;
         this.martAddress = martAddress;
         this.martNumber = martNumber;
+        this.martImg = martImg;
         this.requestYn = requestYn;
         this.openTime = openTime;
         this.closeTime = closeTime;

@@ -246,7 +246,7 @@ public class OrderService {
         ImageIO.write(bufferedImage, "png", baos);
         baos.flush();
 
-        MultipartFile multipartFile = new MockMultipartFile("qrcode", "qrcode", "image/png", baos.toByteArray());
+        MultipartFile multipartFile = new MockMultipartFile("qrcode", "qrcode", "image/jpg", baos.toByteArray());
         String qrcodeUrl = s3Uploder.upload(multipartFile, "qr");
 
         order.updateQrcodeUrl(qrcodeUrl);

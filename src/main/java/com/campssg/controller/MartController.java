@@ -51,8 +51,9 @@ public class MartController {
     })
     @PostMapping
     public ResponseEntity<ResponseMessage> saveMart(
-        @RequestBody @Validated MartSaveRequestDto requestDto) {
-        martService.saveMart(requestDto);
+        @ModelAttribute @Valid MartSaveRequestDto requestDto,
+        @RequestPart(value = "img", required = false) MultipartFile file) throws IOException {
+        martService.saveMart(requestDto, file);
         return new ResponseEntity<>(ResponseMessage.res(HttpStatus.OK, "마트 등록 성공", null), HttpStatus.OK);
     }
 
