@@ -31,7 +31,7 @@ public class MartSaveRequestDto {
     @ApiModelProperty(position = 3, required = true, dataType = "Long", value = "마트 위도")
     private Double latitude;
 
-    @ApiModelProperty(position = 4, required = true, dataType = "Long", value = "사용자 식별번호")
+    @ApiModelProperty(position = 4, hidden = true, dataType = "Long", value = "사용자 식별번호")
     private Long userId;
 
     @NotNull(message = "마트 주소는 필수입니다.")
