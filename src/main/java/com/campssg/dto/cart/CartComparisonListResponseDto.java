@@ -35,7 +35,7 @@ public class CartComparisonListResponseDto {
             this.martAddress = mart.getMartAddress();
             this.openTime = mart.getOpenTime();
             this.closeTime = mart.getCloseTime();
-            this.martImg = "";
+            this.martImg = mart.getMartImg();
             this.martName = mart.getMartName();
             this.notExistsCnt = notExistsCnt;
             this.notExistTotalcnt = notExistTotalcnt;

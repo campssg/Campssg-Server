@@ -19,6 +19,7 @@ public class MartListResponseDto {
     private Double longitude;
     private Long requestYn;
     private Double distance;
+    private String martImg;
 
     public MartListResponseDto(Mart mart, Double latitude, Double longitude) {
         this.martId = mart.getMartId();
@@ -28,6 +29,7 @@ public class MartListResponseDto {
         this.closeTime = mart.getCloseTime();
         this.latitude = mart.getLatitude();
         this.longitude = mart.getLongitude();
+        this.martImg = mart.getMartImg();
         this.requestYn = mart.getRequestYn();
         if (latitude != null && longitude != null) {
             this.distance = distance(mart.getLatitude(), mart.getLongitude(), latitude, longitude);
