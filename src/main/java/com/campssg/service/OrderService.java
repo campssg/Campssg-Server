@@ -103,7 +103,7 @@ public class OrderService {
     public List<UserOrderListResponseDto> getUserOrderList() {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail)
             .orElseThrow(); // 현재 로그인하고 있는 사용자 정보 가져오기
-        List<Order> orderList = orderRepository.findByUser_userId(user.getUserId());
+        List<Order> orderList = orderRepository.findByUser_userIdOrderByCreatedAtDesc(user.getUserId());
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
