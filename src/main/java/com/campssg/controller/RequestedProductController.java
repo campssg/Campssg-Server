@@ -5,6 +5,7 @@ import com.campssg.dto.requestedProduct.AddRequestedProductDto;
 import com.campssg.dto.requestedProduct.GetRequestedProductDto;
 import com.campssg.dto.requestedProduct.GuestRequestDto;
 import com.campssg.service.RequestedProductService;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -30,7 +31,8 @@ public class RequestedProductController {
             @ApiResponse(code = 200, message = "요청 상품 추가 완료")
     })
     @PostMapping("/add")
-    public ResponseEntity<GuestRequestDto> guestRequestProduct(@Valid @RequestBody AddRequestedProductDto addRequestedProductDto) throws IOException {
+    public ResponseEntity<GuestRequestDto> guestRequestProduct(@Valid @RequestBody AddRequestedProductDto addRequestedProductDto)
+        throws FirebaseMessagingException {
         return ResponseEntity.ok(requestedProductService.guestRequestProduct(addRequestedProductDto));
     }
 
@@ -57,7 +59,8 @@ public class RequestedProductController {
             @ApiResponse(code = 200, message = "흥정 완료 처리 성공")
     })
     @PostMapping("/accept/{requestedProductId}")
-    public ResponseEntity<ResponseMessage> acceptRequest(@PathVariable Long requestedProductId) {
+    public ResponseEntity<ResponseMessage> acceptRequest(@PathVariable Long requestedProductId)
+        throws FirebaseMessagingException {
         requestedProductService.acceptedProduct(requestedProductId);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "흥정이 완료되었습니다"));
     }
@@ -67,7 +70,8 @@ public class RequestedProductController {
             @ApiResponse(code = 200, message = "가격 제시 완료")
     })
     @PostMapping("/price/mart/{requestedProductId}/{price}")
-    public ResponseEntity<ResponseMessage> requestPriceToGuest(@PathVariable Long requestedProductId, @PathVariable int price) {
+    public ResponseEntity<ResponseMessage> requestPriceToGuest(@PathVariable Long requestedProductId, @PathVariable int price)
+        throws FirebaseMessagingException {
         requestedProductService.requestPriceToGuest(requestedProductId, price);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "가격 제시가 완료되었습니다"));
     }
@@ -77,7 +81,8 @@ public class RequestedProductController {
             @ApiResponse(code = 200, message = "가격 요청 완료")
     })
     @PostMapping("/price/guest/{requestedProductId}/{price}")
-    public ResponseEntity<ResponseMessage> requestPriceToMart(@PathVariable Long requestedProductId, @PathVariable int price) {
+    public ResponseEntity<ResponseMessage> requestPriceToMart(@PathVariable Long requestedProductId, @PathVariable int price)
+        throws FirebaseMessagingException {
         requestedProductService.requestPriceToMart(requestedProductId, price);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "가격 요청이 완료되었습니다"));
     }

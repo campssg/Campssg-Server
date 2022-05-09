@@ -23,7 +23,9 @@ import com.campssg.dto.order.OrderRequestDto;
 import com.campssg.dto.order.OrderResponseDto;
 import com.campssg.dto.order.RequestedProductList;
 import com.campssg.dto.order.UserOrderListResponseDto;
+import com.campssg.dto.push.PushMessage;
 import com.campssg.util.SecurityUtil;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageConfig;
@@ -37,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -59,6 +62,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final S3Uploder s3Uploder;
     private final RequestedProductRepository requestedProductRepository;
+    private final FcmService fcmService;
 
     // 주문 시 주문서 생성하고 주문 정보 반환
     public OrderResponseDto addOrderInfo(OrderRequestDto orderRequestDto) throws IOException, WriterException {
@@ -120,7 +124,8 @@ public class OrderService {
     // 서비스 이용자 주문 상태에 따른 주문 내역 조회
     public List<UserOrderListResponseDto> getOrderListByState(String orderState) {
         User user = SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserEmail).orElseThrow();
-        List<Order> orderList = orderRepository.findByUser_userIdAndOrderState(user.getUserId(), OrderState.valueOf(orderState));
+        List<Order> orderList = orderRepository
+            .findByUser_userIdAndOrderState(user.getUserId(), OrderState.valueOf(orderState));
         return orderList.stream().map(order -> new UserOrderListResponseDto(order)).collect(Collectors.toList());
     }
 
@@ -219,13 +224,30 @@ public class OrderService {
         return charge;
     }
 
-    public void updateOrderStatus(Long orderId, String status) {
+    public void updateOrderStatus(Long orderId, String status) throws FirebaseMessagingException {
         Order order = orderRepository.findByOrderId(orderId);
         order.updateStatus(OrderState.valueOf(status));
+
+        pushMessageByOrderState(order, status);
+    }
+
+    private void pushMessageByOrderState(Order order, String status) throws FirebaseMessagingException {
+        if (status.equals(OrderState.결제완료.toString())) {
+            // 마트 이용자에게 주문완료 알람
+            fcmService.sendMulticast(
+                new PushMessage(order.getMart().getMartName(), "주문이 들어왔습니다! 확인해주세요!"),
+                Arrays.asList(order.getMart().getUser().getAccessToken()));
+        }
+
+        // 주문 고객에게 변경내용 알림
+        fcmService.sendMulticast(
+            new PushMessage(order.getMart().getMartName() + "이 " + status + "로 변경했어요!",
+                "주문내역에서 변경된 내용을 확인해주세요!"),
+            Arrays.asList(order.getUser().getAccessToken()));
     }
 
     private void createQrImg(Order order) throws IOException, WriterException, WriterException {
-        String url =  order.getOrderId().toString();
+        String url = order.getOrderId().toString();
         String codeurl = new String(url.getBytes("UTF-8"), "ISO-8859-1");
 
         // QRCode 색상값

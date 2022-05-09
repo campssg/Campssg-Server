@@ -64,6 +64,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.google.zxing/core
 	implementation group: 'com.google.zxing', name: 'javase', version: '3.1.0'
 	compile group: 'org.springframework', name: 'spring-test', version: '3.1.1.RELEASE'
+
+    compile group: 'com.google.firebase', name: 'firebase-admin', version: '7.1.0'
 }
 
 tasks.named('test') {

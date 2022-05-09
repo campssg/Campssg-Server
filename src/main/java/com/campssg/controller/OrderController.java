@@ -7,6 +7,7 @@ import com.campssg.dto.order.OrderRequestDto;
 import com.campssg.dto.order.OrderResponseDto;
 import com.campssg.dto.order.UserOrderListResponseDto;
 import com.campssg.service.OrderService;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.zxing.WriterException;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -79,7 +80,8 @@ public class OrderController {
     })
     @PutMapping("/{orderId}/{status}")
     public ResponseEntity<ResponseMessage> updateOrderStatus(@ApiParam(value = "주문 아이디") @PathVariable Long orderId,
-        @ApiParam(value = "주문 상태(주문완료, 결제대기중, 가격흥정중, 결제완료, 픽업준비중, 픽업준비완료, 픽업완료)") @PathVariable String status) {
+        @ApiParam(value = "주문 상태(주문완료, 결제대기중, 가격흥정중, 결제완료, 픽업준비중, 픽업준비완료, 픽업완료)") @PathVariable String status)
+        throws FirebaseMessagingException {
         orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok().body(ResponseMessage.res(HttpStatus.OK, "주문 상태 변경 완료"));
     }
