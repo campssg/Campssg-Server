@@ -5,8 +5,8 @@ Swagger-ui - [http://13.124.13.202:8080/swagger-ui.html/](http://13.124.13.202:8
 ![image](https://user-images.githubusercontent.com/46226445/177318780-6551a0f6-98c8-4c74-8f6d-e01070471f29.png)
 
 # 사용 기술 및 환경
-Spring boot, MySQL, EC2, Amazone S3, Android Studio, Retrofit
-![image](https://user-images.githubusercontent.com/46226445/177308775-7032de3b-37e6-412f-ab64-2c9a9c2d0fcd.png)
+Spring boot, MySQL, EC2, Amazone S3, Android Studio, Retrofit, Firebase
+![image](https://github.com/user-attachments/assets/4bf23d30-3eca-4255-afee-9325184a594f)
 
 # 애플리케이션 기능
 <img width="800" height="500" alt="image" src="https://user-images.githubusercontent.com/46226445/177308519-bfb5fe66-aba7-4222-bbdf-3eeba3a180c9.png">
