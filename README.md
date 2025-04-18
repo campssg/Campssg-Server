@@ -21,4 +21,4 @@ Spring boot, MySQL, EC2, Amazone S3, Android Studio, Retrofit, Firebase
 ![image](https://user-images.githubusercontent.com/46226445/177318581-880d6087-7b59-416f-8926-704de7d4d9d5.png)
 
 # 🏆 AWARD 🏆
-2022년 인천대학교 컴퓨터공학부 졸업작품 장려상 수상
+2022년 컴퓨터공학부 졸업작품 발표대회 장려상 수상
